@@ -1,18 +1,19 @@
 package system
 
 import (
+	e "github.com/SolarSystem/pkg/events"
 	p "github.com/SolarSystem/pkg/planets"
-	ro "github.com/SolarSystem/pkg/rotation"
+	pos "github.com/SolarSystem/pkg/position"
 )
 
 type System struct {
-	Positions []*ro.Position
+	Positions []*pos.Position
 }
 
 func New(ps []p.Planet) *System {
 	system := System{}
 	for _, v := range ps {
-		system.Positions = append(system.Positions, ro.New(v))
+		system.Positions = append(system.Positions, pos.New(v))
 	}
 	return &system
 }
@@ -22,7 +23,16 @@ func New(ps []p.Planet) *System {
 func Rotate(days int, sys *System) {
 	for i := 0; i < days; i++ {
 		for _, v := range sys.Positions {
-			ro.Move(v)
+			pos.Move(v)
 		}
+		performDroughCheck(sys) // first event check.
 	}
+}
+
+func performDroughCheck(sys *System) bool {
+	var isDroughSeason = false
+	if _, check := pos.AngleBetweenPositions(sys.Positions[0], sys.Positions[1]); check {
+		isDroughSeason = e.CheckForDrough(sys.Positions[0], sys.Positions[2])
+	}
+	return isDroughSeason
 }

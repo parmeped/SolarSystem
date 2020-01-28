@@ -17,11 +17,9 @@ func main() {
 	checkErr(err)
 	sys := cfg.DB.SolarSystem
 
-	showPlanetsPositions(sys)
-
-	sol.Rotate(73, sys)
-	showPlanetsPositions(sys)
-
+	for i := 0; i < 1500; i++ {
+		sol.Rotate(i, sys)
+	}
 }
 
 func checkErr(err error) {

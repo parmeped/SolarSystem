@@ -1,6 +1,8 @@
-package rotation
+package position
 
-import pl "github.com/SolarSystem/pkg/planets"
+import (
+	pl "github.com/SolarSystem/pkg/planets"
+)
 
 type Position struct {
 	Planet            pl.Planet
@@ -35,11 +37,33 @@ func Move(p *Position) {
 	}
 }
 
+// TODO: Check, should be max 180°? When 180, it could be a drough season, if the third point is 180 too. I believe, since this is angled with the sun. I believe its malfunctioning, check this through
+// Candidate for concurrency
 // this calculates the angle between two points. this angle is the one of the sun.
-func AngleBetweenPositions(p1 *Position, p2 *Position) float32 {
-	if p1.ClockWisePosition > p2.ClockWisePosition {
-		return p1.ClockWisePosition - p2.ClockWisePosition
+func AngleBetweenPositions(p1 *Position, p2 *Position) (float32, bool) {
+	//fmt.Printf("Planet: %v, Position: %v; Planet: %v, Position: %v \n", p1.Planet.Name, p1.ClockWisePosition, p2.Planet.Name, p2.ClockWisePosition)
+
+	shouldCheckDrough := false
+	var angle float32 = 0
+	cwp1 := p1.ClockWisePosition
+	cwp2 := p2.ClockWisePosition
+
+	if cwp1 > 180 || cwp2 > 180 {
+		if cwp1 > cwp2 {
+			angle = (360 - cwp1) + cwp2
+		} else {
+			angle = (360 - cwp2) + cwp1
+		}
 	} else {
-		return p2.ClockWisePosition - p1.ClockWisePosition
+		if cwp1 > cwp2 {
+			angle = cwp1 - cwp2
+		} else {
+			angle = cwp2 - cwp1
+		}
 	}
+
+	if angle == 180 || angle == 0 {
+		shouldCheckDrough = true
+	}
+	return angle, shouldCheckDrough
 }
