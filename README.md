@@ -1,2 +1,2 @@
 # SolarSystem
-Solar System Challenge for ML
+Solar System Challenge
