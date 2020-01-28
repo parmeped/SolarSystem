@@ -1,0 +1,7 @@
+Time_vars:
+  days_in_a_year: 365
+  years_to_calc: 10
+  starting_date: 01-01-2000
+
+Orbit_vars:
+  grades: 360
