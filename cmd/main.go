@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 
+	sol "github.com/SolarSystem/pkg/system"
 	"github.com/SolarSystem/pkg/utl/config"
 )
 
@@ -14,12 +15,25 @@ func main() {
 
 	cfg, err := config.Load(*cfgPath)
 	checkErr(err)
+	sys := cfg.DB.SolarSystem
 
-	fmt.Printf("The distance from the sun for planet %v is %v", cfg.DB.Planets.get(0), cfg.DB.Planets.get(0))
+	showPlanetsPositions(sys)
+
+	sol.Rotate(73, sys)
+	showPlanetsPositions(sys)
+
 }
 
 func checkErr(err error) {
 	if err != nil {
 		panic(err.Error())
 	}
+}
+
+func showPlanetsPositions(sol *sol.System) {
+	fmt.Print("Reading positions...\n")
+	for _, v := range sol.Positions {
+		fmt.Printf("The planet %v is at the position %v \n", v.Planet.Name, v.ClockWisePosition)
+	}
+	fmt.Print("-------------------------------\n")
 }

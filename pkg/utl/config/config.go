@@ -4,7 +4,8 @@ import (
 	"fmt"
 	"io/ioutil"
 
-	repo "github.com/SolarSystem/pkg/repository"
+	pRepo "github.com/SolarSystem/pkg/planets"
+	sol "github.com/SolarSystem/pkg/system"
 	yaml "gopkg.in/yaml.v2"
 )
 
@@ -18,7 +19,12 @@ func Load(path string) (*Configuration, error) {
 	if err := yaml.Unmarshal(bytes, cfg); err != nil {
 		return nil, fmt.Errorf("unable to decode into struct, %v", err)
 	}
-	cfg.DB.Planets = repo.GetPlanets()
+
+	planets := pRepo.Planets_Array
+	var db = Database{}
+	cfg.DB = &db
+	cfg.DB.SolarSystem = sol.New(planets)
+
 	return cfg, nil
 }
 
@@ -35,5 +41,5 @@ type Time_Vars struct {
 }
 
 type Database struct {
-	Planets *[]repo.Planet
+	SolarSystem *sol.System
 }
