@@ -14,7 +14,7 @@ func New(p pl.Planet) *Position {
 		p,
 		0,
 	}
-
+	pos.Planet.TimeToCycle = 360 / pos.Planet.Rotation_grades
 	return &pos
 }
 

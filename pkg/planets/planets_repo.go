@@ -6,17 +6,20 @@ var Planets_Array = []Planet{
 		false,
 		1000,
 		"Vulcano",
+		0,
 	},
 	Planet{
 		1,
 		true,
 		500,
 		"Ferengi",
+		0,
 	},
 	Planet{
 		3,
 		true,
 		2000,
 		"Betasoide",
+		0,
 	},
 }

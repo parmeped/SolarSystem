@@ -5,4 +5,5 @@ type Planet struct {
 	Clock_wise      bool
 	Distance        float32
 	Name            string
+	TimeToCycle     float32
 }

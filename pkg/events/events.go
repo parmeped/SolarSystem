@@ -1,6 +1,8 @@
 package events
 
-import pos "github.com/SolarSystem/pkg/position"
+import (
+	pos "github.com/SolarSystem/pkg/position"
+)
 
 // Seems to be working fine.
 func CheckForDrough(p1 *pos.Position, p2 *pos.Position) bool {

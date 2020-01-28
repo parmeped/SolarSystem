@@ -6,9 +6,9 @@ import (
 )
 
 type Triangle struct {
-	AngleA    float32
-	AngleB    float32
-	AngleC    float32
+	AngleA    float32 // opposite to BC
+	AngleB    float32 // opposite to AC
+	AngleC    float32 // opposite to AB
 	LengthAB  float32
 	LengthBC  float32
 	LengthAC  float32
@@ -29,16 +29,12 @@ func TwoSidesOneAngleTStrategy(sideA, sideB float32, angle float32) {
 		AngleA:   angle,
 	}
 
-	// horrible conversion because apparently math pkg works only with float64
-	_sideA, _sideB := float64(sideA), float64(sideB)
-	_angle := float64(angle)
-	// Cosino theorem (Teorema del coseno)
-	triangle.LengthBC = float32(m.Sqrt(m.Pow(_sideA, 2) + m.Pow(_sideB, 2) - ((2 * _sideA * _sideB) * m.Cos(_angle))))
-
-	triangle.AngleB
+	triangle.LengthBC = calculateCosin(sideA, sideB, angle)
+	triangle.AngleB = calculateSin()
 
 }
 
+// Simple check to know if a triangle is ok or is all bollocks.
 func checkTriangleAngles(t *Triangle) bool {
 	if t.AngleA+t.AngleB+t.AngleC != 180 {
 		fmt.Printf("Error checking triangle! AngleA: %v, AngleB: %v, AngleC: %v \n", t.AngleA, t.AngleB, t.AngleC)
@@ -46,4 +42,16 @@ func checkTriangleAngles(t *Triangle) bool {
 	} else {
 		return true
 	}
+}
+
+// Cosin? (Teorema del coseno) this is for calculate the remaining side on a triangle where two sides and an angle is known
+func calculateCosin(sideA, sideB, angle float32) float32 {
+	// horrible conversion because apparently math pkg works only with float64
+	_sideA, _sideB := float64(sideA), float64(sideB)
+	_angle := float64(angle)
+	return float32(m.Sqrt(m.Pow(_sideA, 2) + m.Pow(_sideB, 2) - ((2 * _sideA * _sideB) * m.Cos(_angle))))
+}
+
+func calculateSin() float32 {
+	return 0
 }

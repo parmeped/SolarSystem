@@ -1,7 +1,7 @@
 # SolarSystem
 Solar System Challenge
 
-* Drough season // check, seems ok.
+* Drough season // Revision
 * Optimal day 
 * Rain season
-* Most Rain day
+* Most Rain day // Possible approach.

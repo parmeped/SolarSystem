@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 
+	h "github.com/SolarSystem/pkg/helpers"
 	sol "github.com/SolarSystem/pkg/system"
 	"github.com/SolarSystem/pkg/utl/config"
 )
@@ -13,13 +14,12 @@ func main() {
 	cfgPath := flag.String("p", "conf.local.yaml", "Path to config file")
 	flag.Parse()
 
-	cfg, err := config.Load(*cfgPath)
+	_, err := config.Load(*cfgPath)
 	checkErr(err)
-	sys := cfg.DB.SolarSystem
+	//sys := cfg.DB.SolarSystem
 
-	for i := 0; i < 1500; i++ {
-		sol.Rotate(i, sys)
-	}
+	fmt.Println(h.LCM(12, 80))
+
 }
 
 func checkErr(err error) {
