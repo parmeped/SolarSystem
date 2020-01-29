@@ -28,6 +28,8 @@ func New(p pl.Planet) *Position {
 	return &pos
 }
 
+// TODO: The code is all over the place, and the functions have weird names. try and move a couple things out, and change func names. If there's time, see if it can be more generic
+
 // TODO: Logic here should be something that checks for circle completition, thus restarting.
 // Maybe a global config? We can momentarily assume the rotation_grades property COULD just be negative, indicating counterclock movement.
 // this can be improved if we multiply the amount of grades it has to move. days * grades, should give amount.
@@ -78,8 +80,21 @@ func AngleBetweenPositions(p1 *Position, p2 *Position) (float32, bool) {
 	return angle, shouldCheckDrough
 }
 
-// GetDroughSeasonsOnCycle calculates how many times there's a Drough season on a cycle.
-func GetDroughSeasonsOnCycle(cycleDays int, positions ...*Position) int {
+// GetDroughSeasonsForYears returns the amount of droughs there's on a certain amount of years
+// TODO: see if the hardcoded 365 value can be turned into a cfg call. What about leap years?
+func GetDroughSeasonsForYears(years int, positions []*Position) int {
+	return GetDroughSeasonsForDays((years * 365), positions)
+}
+
+// GetDroughSeasonsForDays returns the amount of droughs there's on a certain amount of days
+func GetDroughSeasonsForDays(days int, positions []*Position) int {
+	var multiplier = days / 360
+	var cycleDays = TimeToSystemCycle(positions)
+	droughSeasons, droughDays = GetDroughSeasonsForCycle()
+}
+
+// GetDroughSeasonsForCycle calculates how many times there's a Drough season on a cycle.
+func GetDroughSeasonsForCycle(cycleDays int, positions []*Position) (int, []int) {
 	// I know there's a least amount of time a couple of points can intersect. The check has to be for each pair of points
 	fastestCycle, index, secondIndex := cycleDays, 0, 0
 
@@ -117,12 +132,13 @@ func GetDroughSeasonsOnCycle(cycleDays int, positions ...*Position) int {
 // 	return min, index
 // }
 
-// checks how many droughs are on a cycle.
-func checkForDroughs(intersect intersections, cycleDays int, positions []*Position) int {
+// checks how many droughs are on a cycle. {amountOfDroughs, []daysOfDroughs}
+func checkForDroughs(intersect intersections, cycleDays int, positions []*Position) (int, []int) {
 
 	// the period starts on a drough, since all planets start on pos 0
 	amountOfDroughs, days := 1, int(intersect.timeToFirst)
 	positionToCheck, positionToCompare := &Position{}, &Position{}
+	daysOfDroughs := []int{0} // TODO: this feels like a hack!
 
 	// get the fastest planet
 	if intersect.positionA.Planet.TimeToCycle > intersect.positionB.Planet.TimeToCycle {
@@ -144,10 +160,11 @@ func checkForDroughs(intersect intersections, cycleDays int, positions []*Positi
 		positionPlanetToCompare = GetPositionAtTime(&positionToCompare.Planet, i)
 		i = i + days
 		if checkPositionsForDrough(positionPlanetToCheck, positionPlanetToCompare) {
+			daysOfDroughs = append(daysOfDroughs, i)
 			amountOfDroughs++
 		}
 	}
-	return amountOfDroughs
+	return amountOfDroughs, daysOfDroughs
 }
 
 func checkPositionsForDrough(positionToCheck, positionToCompare int) bool {
@@ -218,8 +235,9 @@ func GetPositionAtTime(p *pl.Planet, days int) int {
 	}
 }
 
+// TODO: Finish
 // get the time for n positions to complete a cycle.
-func TimeToSystemCycle(p1, p2 *Position, positions ...*Position) float32 {
+func TimeToSystemCycle(positions []*Position) float32 {
 	result := timeToStartingPoint(p1, p2)
 
 	for i := 0; i < len(positions); i++ {

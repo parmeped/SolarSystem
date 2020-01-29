@@ -26,8 +26,8 @@ func main() {
 	fmt.Printf("Amount intersects: %v , time1: %v, time2: %v \n", intersects, time1, time2)
 
 	cycleDays := int(pos.TimeToSystemCycle(sys.Positions[0], sys.Positions[1], sys.Positions[2]))
-	var asd = pos.GetDroughSeasonsOnCycle(cycleDays, sys.Positions[1], sys.Positions[2], sys.Positions[0])
-	fmt.Printf("asd: %v", asd)
+	amountDroughs, daysDroughs := pos.GetDroughSeasonsForCycle(cycleDays, sys.Positions)
+	fmt.Printf("amountDroughs: %v, daysDroughs: %v \n", amountDroughs, daysDroughs)
 
 	//fmt.Println(h.LCM(12, 80))
 
