@@ -6,8 +6,8 @@ import (
 
 	//h "github.com/SolarSystem/pkg/helpers"
 	pos "github.com/SolarSystem/pkg/position"
-	sol "github.com/SolarSystem/pkg/system"
 	repo "github.com/SolarSystem/pkg/repository"
+	sol "github.com/SolarSystem/pkg/system"
 	"github.com/SolarSystem/pkg/utl/config"
 )
 
@@ -18,18 +18,16 @@ func main() {
 
 	_, err := config.Load(*cfgPath)
 	checkErr(err)
-	
+
 	DB := repo.New()
 	sys := DB.SolarSystem
 
-	var intersects = pos.IntersectsChecks(sys.Positions[1], sys.Positions[2], 180)
-	fmt.Printf("Amount intersects: %v \n", intersects)
-	sol.Rotate(180, sys)
-	showPlanetsPositions(sys)	
+	var time1, time2, intersects = pos.GetTwoPointsIntersections(sys.Positions[1], sys.Positions[2])
+	fmt.Printf("Amount intersects: %v , time1: %v, time2: %v \n", intersects, time1, time2)
 
-	var distance = pos.GetPositionPointTime(&sys.Positions[0].Planet, 1500)
-
-	fmt.Printf("Distance: %v", distance)
+	cycleDays := int(pos.TimeToSystemCycle(sys.Positions[0], sys.Positions[1], sys.Positions[2]))
+	var asd = pos.GetDroughSeasonsOnCycle(cycleDays, sys.Positions[1], sys.Positions[2], sys.Positions[0])
+	fmt.Printf("asd: %v", asd)
 
 	//fmt.Println(h.LCM(12, 80))
 
@@ -53,7 +51,7 @@ func showPlanetsData(sol *sol.System) {
 	fmt.Print("Reading data...\n")
 	for _, v := range sol.Positions {
 		fmt.Printf("Planet: %v, Distance: %v, RotationSpeed: %v, TimeToCylce: %v \n",
-		v.Planet.Name, v.Planet.Distance, v.Planet.Rotation_grades, v.Planet.TimeToCycle)
+			v.Planet.Name, v.Planet.Distance, v.Planet.Rotation_grades, v.Planet.TimeToCycle)
 	}
 	fmt.Print("-------------------------------\n")
 }

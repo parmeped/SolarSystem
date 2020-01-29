@@ -2,21 +2,21 @@ package planets
 
 var Planets_Array = []Planet{
 	Planet{
-		-5,		
+		-5,
 		1000,
 		"Vulcano",
-		0,
+		45,
 	},
 	Planet{
-		1,		
+		1,
 		500,
 		"Ferengi",
-		0,
+		45,
 	},
 	Planet{
-		3,		
+		3,
 		2000,
 		"Betasoide",
-		0,
+		45,
 	},
 }
