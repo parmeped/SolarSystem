@@ -88,9 +88,20 @@ func GetDroughSeasonsForYears(years int, positions []*Position) int {
 
 // GetDroughSeasonsForDays returns the amount of droughs there's on a certain amount of days
 func GetDroughSeasonsForDays(days int, positions []*Position) int {
-	var multiplier = days / 360
-	var cycleDays = TimeToSystemCycle(positions)
-	droughSeasons, droughDays = GetDroughSeasonsForCycle()
+	cycleDays := TimeToSystemCycle(positions[0], positions[1], positions[2])
+	multiplier := days / int(cycleDays)
+	daysRemaining := days % int(cycleDays)
+	droughSeasons, droughDays := GetDroughSeasonsForCycle(int(cycleDays), positions)
+	droughSeasons = droughSeasons * multiplier
+
+	for _, v := range droughDays {
+		if (v <= daysRemaining) {
+			droughSeasons++
+		} else {
+			break
+		}
+	}
+	return droughSeasons
 }
 
 // GetDroughSeasonsForCycle calculates how many times there's a Drough season on a cycle.
@@ -119,20 +130,7 @@ func GetDroughSeasonsForCycle(cycleDays int, positions []*Position) (int, []int)
 	return checkForDroughs(intersect, cycleDays, positions)
 }
 
-// // returns every how much we should check for a Drough season
-// func leastDaysCheck(intersects []intersections, cycleDays int) (int, int) {
-// 	var min = cycleDays
-// 	var index = 0
-// 	for k, v := range intersects {
-// 		if int(v.timeToFirst) < min {
-// 			min = int(v.timeToFirst)
-// 			index = k
-// 		}
-// 	}
-// 	return min, index
-// }
-
-// checks how many droughs are on a cycle. {amountOfDroughs, []daysOfDroughs}
+// checks if there are droughs on a cycle. {amountOfDroughs, []daysOfDroughs}
 func checkForDroughs(intersect intersections, cycleDays int, positions []*Position) (int, []int) {
 
 	// the period starts on a drough, since all planets start on pos 0
@@ -167,6 +165,7 @@ func checkForDroughs(intersect intersections, cycleDays int, positions []*Positi
 	return amountOfDroughs, daysOfDroughs
 }
 
+// drough check helper. Compares two positions to find a drough
 func checkPositionsForDrough(positionToCheck, positionToCompare int) bool {
 	result := positionToCheck - positionToCompare
 	fmt.Printf("posCheck: %v, posCompare: %v, result: %v \n", positionToCheck, positionToCompare, result)
@@ -235,9 +234,9 @@ func GetPositionAtTime(p *pl.Planet, days int) int {
 	}
 }
 
-// TODO: Finish
+
 // get the time for n positions to complete a cycle.
-func TimeToSystemCycle(positions []*Position) float32 {
+func TimeToSystemCycle(p1, p2 *Position, positions ...*Position) float32 {
 	result := timeToStartingPoint(p1, p2)
 
 	for i := 0; i < len(positions); i++ {

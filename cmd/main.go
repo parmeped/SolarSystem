@@ -28,8 +28,8 @@ func main() {
 	cycleDays := int(pos.TimeToSystemCycle(sys.Positions[0], sys.Positions[1], sys.Positions[2]))
 	amountDroughs, daysDroughs := pos.GetDroughSeasonsForCycle(cycleDays, sys.Positions)
 	fmt.Printf("amountDroughs: %v, daysDroughs: %v \n", amountDroughs, daysDroughs)
-
-	//fmt.Println(h.LCM(12, 80))
+	droughsTotal := pos.GetDroughSeasonsForYears(1500, sys.Positions)
+	fmt.Printf("daysDroughs: %v \n", droughsTotal)
 
 }
 
