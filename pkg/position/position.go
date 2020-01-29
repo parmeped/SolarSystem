@@ -1,7 +1,7 @@
 package position
 
 import (
-	pl "github.com/SolarSystem/pkg/planets"
+	pl "github.com/SolarSystem/pkg/planets"	
 )
 
 type Position struct {
@@ -13,8 +13,7 @@ func New(p pl.Planet) *Position {
 	pos := Position{
 		p,
 		0,
-	}
-	pos.Planet.TimeToCycle = 360 / pos.Planet.Rotation_grades
+	}	
 	return &pos
 }
 
@@ -23,7 +22,7 @@ func New(p pl.Planet) *Position {
 // this can be improved if we multiply the amount of grades it has to move. days * grades, should give amount.
 // Moves a planet 1 day.
 func Move(p *Position) {
-	if p.Planet.Clock_wise {
+	if p.Planet.Rotation_grades > 0 {
 		p.ClockWisePosition = p.ClockWisePosition + p.Planet.Rotation_grades
 		if p.ClockWisePosition >= 360 {
 			p.ClockWisePosition = p.ClockWisePosition - 360
@@ -66,4 +65,50 @@ func AngleBetweenPositions(p1 *Position, p2 *Position) (float32, bool) {
 		shouldCheckDrough = true
 	}
 	return angle, shouldCheckDrough
+}
+
+// IntersectsChecks sees if two positions intersect at any given time. 
+// TODO: check if at given result time, there's an intersection with the remaining point. Further testing! this is just one check. there's more apparently
+func IntersectsChecks(p1 *Position, p2 *Position, days int) int {
+	var numberIntersects int = 0
+	var relativeSpeed = getRelativeSpeed(p1.Planet.Rotation_grades, p2.Planet.Rotation_grades)
+	for t := float32(0); t < float32(days) ; {
+		t = float32(360) / relativeSpeed
+		if t <= float32(days) {
+			numberIntersects++
+		}		
+	}
+	return numberIntersects
+}
+
+// gets relative speed of two planets.
+func getRelativeSpeed(speed1, speed2 float32)  float32 {			
+	if speed1 > speed2 {
+		return speed1 - speed2
+	} else {
+		return speed2 - speed1
+	}
+}
+
+// GetPositionPointTime gets the position of a planet given a specific time. Seems to be working ok!
+func GetPositionPointTime(p *pl.Planet, days int) int {
+	var travelledDistance = int(p.Rotation_grades) * days
+
+	// negative value
+	if travelledDistance < 0 {
+		travelledDistance = travelledDistance + ((travelledDistance / -360) * 360)
+		if travelledDistance != 0 {
+			return 360 + travelledDistance
+		} else {
+			return travelledDistance
+		}
+
+	}
+
+	// positive value
+	if travelledDistance > 359 {
+		return travelledDistance - ((travelledDistance / 360) * 360)
+	} else {
+		return travelledDistance
+	}	
 }
