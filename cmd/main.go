@@ -22,13 +22,14 @@ func main() {
 	DB := repo.New()
 	sys := DB.SolarSystem
 
+
 	var time1, time2, intersects = pos.GetTwoPointsIntersections(sys.Positions[1], sys.Positions[2])
 	fmt.Printf("Amount intersects: %v , time1: %v, time2: %v \n", intersects, time1, time2)
 
 	cycleDays := int(pos.TimeToSystemCycle(sys.Positions[0], sys.Positions[1], sys.Positions[2]))
 	amountDroughs, daysDroughs := pos.GetDroughSeasonsForCycle(cycleDays, sys.Positions)
 	fmt.Printf("amountDroughs: %v, daysDroughs: %v \n", amountDroughs, daysDroughs)
-	droughsTotal := pos.GetDroughSeasonsForYears(1500, sys.Positions)
+	droughsTotal := pos.GetDroughSeasonsForYears(0, sys.Positions)
 	fmt.Printf("daysDroughs: %v \n", droughsTotal)
 
 }

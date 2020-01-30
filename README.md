@@ -2,6 +2,6 @@
 Solar System Challenge
 
 * Drough season // Ok
-* Optimal day 
+* Optimal day // Approach
 * Rain season
 * Most Rain day // Possible approach.

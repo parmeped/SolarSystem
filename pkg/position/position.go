@@ -80,6 +80,9 @@ func AngleBetweenPositions(p1 *Position, p2 *Position) (float32, bool) {
 	return angle, shouldCheckDrough
 }
 
+// DistanceBetweenPositions calculates the distance between two points. 
+
+
 // GetDroughSeasonsForYears returns the amount of droughs there's on a certain amount of years
 // TODO: see if the hardcoded 365 value can be turned into a cfg call. What about leap years?
 func GetDroughSeasonsForYears(years int, positions []*Position) int {
