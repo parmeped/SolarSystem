@@ -1,5 +1,7 @@
 package events
 
+// this package should expose methods to calculate the drough season.
+
 import (
 	pos "github.com/SolarSystem/pkg/position"
 )
