@@ -3,8 +3,10 @@ package events
 // this package should expose methods to calculate the optimal alignment.
 
 import (
+	"fmt"
 	m "math"
 
+	h "github.com/SolarSystem/pkg/helpers"
 	pos "github.com/SolarSystem/pkg/position"
 	sol "github.com/SolarSystem/pkg/system"
 )
@@ -17,12 +19,11 @@ func GetOptimalAlignmentsForYears(years int, sys *sol.System) int {
 // TODO: This logic is the same as the other events. This is a candidate for a generic, or at least a strategy
 // GetOptimalAlignmentsForDays returns how many optimal climate alignments happen in {n} days
 func GetOptimalAlignmentsForDays(days int, sys *sol.System) int {
-	positions := sys.Positions
-	cycleDays := pos.TimeToSystemCycle(positions[0], positions[1], positions[2])
+	cycleDays := pos.TimeToSystemCycle(sys.Positions[0], sys.Positions[1], sys.Positions[2])
 	multiplier := days / int(cycleDays)
 	daysRemaining := days % int(cycleDays)
 
-	optimalSeasons, optimalDays := getOptimalAlignmentsForCycle(int(cycleDays), positions)
+	optimalSeasons, optimalDays := getOptimalAlignmentsForCycle(int(cycleDays), sys)
 	optimalSeasons = optimalSeasons * multiplier
 
 	for _, v := range optimalDays {
@@ -36,12 +37,26 @@ func GetOptimalAlignmentsForDays(days int, sys *sol.System) int {
 }
 
 // checks if there are optimalAlignments on a cycle. {amountOfOptimals, []daysOfOptimals}
-func getOptimalAlignmentsForCycle(cycleDays int, positions []*pos.Position) (int, []int) {
+func getOptimalAlignmentsForCycle(cycleDays int, sys *sol.System) (int, []int) {
+	// for each day on the cycle, see if there's an alignment. how can you pass a function that's executed after each day it rotates?
+	// TODO: maybe when returning true, should also check for alignment with sun
+	event := Events{}
+
+	passFunction := []h.IExecute{} // small compromise so that RotateAndExecute can receive more than 1 function at a time. In theory
+	passFunction = append(passFunction, event)
+
+	sol.RotateAndExecute(cycleDays, sys, passFunction)
+
 	return 0, []int{}
 }
 
+// TODO: Why it's not implementing this?
+func (e *Events) Execute() {
+	fmt.Print("Helou World!")
+}
+
 // Checks if {n} positions are aligned.
-func CheckAlignmentForPositions(positions []*pos.Position) bool {
+func checkAlignmentForPositions(positions []*pos.Position) bool {
 	coordinates := []pos.Coordinate{}
 	for _, v := range positions {
 		coordinates = append(coordinates, pos.ConvertPolarToCartesian(v))

@@ -1,12 +1,13 @@
 package planets
 
 type Planet struct {
-	Rotation_grades float32	
+	Rotation_grades float32
 	Distance        float32
 	Name            string
 	TimeToCycle     float32
 }
 
+// TODO: see if that 360 can be a cfg call
 // Get all planets and set their time to complete 360 Cycle
 func GetPlanets() []Planet {
 	var planets = Planets_Array

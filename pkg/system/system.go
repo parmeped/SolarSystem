@@ -1,6 +1,7 @@
 package system
 
 import (
+	h "github.com/SolarSystem/pkg/helpers"
 	p "github.com/SolarSystem/pkg/planets"
 	pos "github.com/SolarSystem/pkg/position"
 )
@@ -25,6 +26,17 @@ func Rotate(days int, sys *System) {
 			pos.Move(v)
 		}
 		//performDroughCheck(sys) // first event check.
+	}
+}
+
+func RotateAndExecute(days int, sys *System, fn []h.IExecute) {
+	for i := 0; i < days; i++ {
+		for _, v := range sys.Positions {
+			pos.Move(v)
+		}
+		for _, v := range fn {
+			v.Execute()
+		}
 	}
 }
 
