@@ -3,9 +3,11 @@ package main
 import (
 	"flag"
 	"fmt"
+	"time"
 
 	//h "github.com/SolarSystem/pkg/helpers"
-	pos "github.com/SolarSystem/pkg/position"
+
+	e "github.com/SolarSystem/pkg/events"
 	repo "github.com/SolarSystem/pkg/repository"
 	sol "github.com/SolarSystem/pkg/system"
 	"github.com/SolarSystem/pkg/utl/config"
@@ -22,16 +24,12 @@ func main() {
 	DB := repo.New()
 	sys := DB.SolarSystem
 
+	timeStamp()
+	sol.Rotate(16, sys)
+	showPlanetsPositions(sys)
 
-	var time1, time2, intersects = pos.GetTwoPointsIntersections(sys.Positions[1], sys.Positions[2])
-	fmt.Printf("Amount intersects: %v , time1: %v, time2: %v \n", intersects, time1, time2)
-
-	cycleDays := int(pos.TimeToSystemCycle(sys.Positions[0], sys.Positions[1], sys.Positions[2]))
-	amountDroughs, daysDroughs := pos.GetDroughSeasonsForCycle(cycleDays, sys.Positions)
-	fmt.Printf("amountDroughs: %v, daysDroughs: %v \n", amountDroughs, daysDroughs)
-	droughsTotal := pos.GetDroughSeasonsForYears(0, sys.Positions)
-	fmt.Printf("daysDroughs: %v \n", droughsTotal)
-
+	alligned := e.CheckAlignmentForPositions(sys.Positions)
+	fmt.Printf("Alligned? %v \n", alligned)
 }
 
 func checkErr(err error) {
@@ -50,9 +48,16 @@ func showPlanetsPositions(sol *sol.System) {
 
 func showPlanetsData(sol *sol.System) {
 	fmt.Print("Reading data...\n")
-	for _, v := range sol.Positions {
-		fmt.Printf("Planet: %v, Distance: %v, RotationSpeed: %v, TimeToCylce: %v \n",
-			v.Planet.Name, v.Planet.Distance, v.Planet.Rotation_grades, v.Planet.TimeToCycle)
+	for k, v := range sol.Positions {
+		fmt.Printf("Index: %v, Planet: %v, Distance: %v, RotationSpeed: %v, TimeToCylce: %v \n",
+			k, v.Planet.Name, v.Planet.Distance, v.Planet.Rotation_grades, v.Planet.TimeToCycle)
 	}
 	fmt.Print("-------------------------------\n")
+}
+
+func timeStamp() {
+	fmt.Print("Program starting...\n")
+	fmt.Printf("Time: %v \n", time.Now())
+	fmt.Print("-------------------------------\n")
+
 }
