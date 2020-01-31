@@ -3,14 +3,12 @@ package optimalalignment
 // this package should expose methods to calculate the optimal alignment.
 
 import (
-	m "math"
-
-	e "github.com/SolarSystem/pkg/events"
 	pos "github.com/SolarSystem/pkg/position"
 	sol "github.com/SolarSystem/pkg/system"
 )
 
 type optimalAlignment struct {
+	Name string
 }
 
 // GetOptimalAlignmentsForYears returns how many optimal climate alignments happen in {n} years
@@ -25,7 +23,7 @@ func GetOptimalAlignmentsForDays(days int, sys *sol.System) int {
 	multiplier := days / int(cycleDays)
 	daysRemaining := days % int(cycleDays)
 
-	optimalSeasons, optimalDays := getOptimalAlignmentsForCycle(int(cycleDays), sys)
+	optimalSeasons, optimalDays := GetOptimalAlignmentsForCycle(int(cycleDays), sys)
 	optimalSeasons = optimalSeasons * multiplier
 
 	for _, v := range optimalDays {
@@ -39,29 +37,36 @@ func GetOptimalAlignmentsForDays(days int, sys *sol.System) int {
 }
 
 // checks if there are optimalAlignments on a cycle. {amountOfOptimals, []daysOfOptimals}
-func getOptimalAlignmentsForCycle(cycleDays int, sys *sol.System) (int, []int) {
+func GetOptimalAlignmentsForCycle(cycleDays int, sys *sol.System) (int, []int) {
 	// for each day on the cycle, see if there's an alignment. how can you pass a function that's executed after each day it rotates?
 
-	optAlignment := optimalAlignment{}
-	event := e.New("OptimalAlignment")
-	sys.AddEvent(event)
+	optAlignment := optimalAlignment{"OptimalAlignment"}
+	sys.AddCheck(optAlignment)
+	sys.NewEvent(optAlignment.Name)
 
-	passFunction := []sol.IExecute{} // small compromise so that RotateAndExecute can receive more than 1 function at a time. In theory
-	passFunction = append(passFunction, &optAlignment)
-
-	sol.RotateAndExecute(cycleDays, sys, passFunction)
+	sol.RotateAndExecute(cycleDays, sys)
 
 	return 0, []int{}
 }
 
-// TODO: how can I retrieve this event?
-// Middleware function for Polymorfism implementation
-func DailyCheck(sys *sol.System) {
-	days := &(*sys.Events)["OptimalAlignment"]
+// daily check function used for daily checks on a system after it rotates one day
+func (opt optimalAlignment) DailyCheck(sys *sol.System, dayChecked int) {
+	isAligned, coords := checkAlignmentForPositions(sys.Positions)
+	if isAligned {
+		// sun coordinate
+		sunCoord := pos.Coordinate{}
+		sunCoord.X, sunCoord.Y = 0, 0
+		*coords = append(*coords, sunCoord)
+		if isAligned, _ = checkAlignmentForCoordinates(coords); !isAligned {
+			sys.Events["OptimalAlignment"].AmountDays++
+			sys.Events["OptimalAlignment"].DaysEvent = append(sys.Events["OptimalAlignment"].DaysEvent, dayChecked)
+		}
+
+	}
 }
 
-// Checks if {n} positions are aligned.
-func checkAlignmentForPositions(positions []*pos.Position) bool {
+// Checks if {n} positions are aligned. Also returns the positions converted to coordinates
+func checkAlignmentForPositions(positions []*pos.Position) (bool, *[]pos.Coordinate) {
 	coordinates := []pos.Coordinate{}
 	for _, v := range positions {
 		coordinates = append(coordinates, pos.ConvertPolarToCartesian(v))
@@ -72,17 +77,17 @@ func checkAlignmentForPositions(positions []*pos.Position) bool {
 // TODO: maybe when returning true, should also check for alignment with sun
 // TODO: Somewhere here we have to NOT check on drough days
 // checks if {n} coordinates are aligned.
-func checkAlignmentForCoordinates(coords *[]pos.Coordinate) bool {
+func checkAlignmentForCoordinates(coords *[]pos.Coordinate) (bool, *[]pos.Coordinate) {
 	aligned := false
 	coordsLength := len(*coords)
 
 	// simple validation check
 	if coordsLength < 3 {
-		return false
+		return false, coords
 	}
 
 	// this should cycle through all of them
-	for k, _ := range *coords {
+	for k := range *coords {
 		coord1 := (*coords)[k]
 		coord2 := (*coords)[k+1]
 		coord3 := (*coords)[k+2] // this is the common point checked.
@@ -91,8 +96,8 @@ func checkAlignmentForCoordinates(coords *[]pos.Coordinate) bool {
 		slopeA := float64((coord1.Y - coord3.Y) / (coord1.X - coord3.X))
 		slopeB := float64((coord3.Y - coord2.Y) / (coord3.X - coord2.X))
 
-		// could convert to int for slope checking and performance gain?
-		if m.Round(slopeA) == m.Round(slopeB) {
+		// could convert to int, for slope checking and performance gain?
+		if int(slopeA) == int(slopeB) {
 
 			aligned = true
 			// would break otherwise, and all points have been checked
@@ -104,5 +109,6 @@ func checkAlignmentForCoordinates(coords *[]pos.Coordinate) bool {
 			break
 		}
 	}
-	return aligned
+
+	return aligned, coords
 }

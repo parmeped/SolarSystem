@@ -38,7 +38,7 @@ func New(p pl.Planet) *Position {
 
 // Maybe a global config?
 // Moves a planet 1 day.
-func Move(p *Position) {
+func (p *Position) Move() {
 	if p.Planet.Rotation_grades > 0 {
 		p.ClockWisePosition = p.ClockWisePosition + p.Planet.Rotation_grades
 		if p.ClockWisePosition >= 360 {

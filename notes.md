@@ -18,6 +18,9 @@ Optimum climate:
 this is when the three points are collinear. AND! they are NOT collinear with the sun. (test for the remaining point? ORRR use the days there's drough! on those days, we should NOT check for collinearity. Maybe implement both approaches, since one's more efficient and the other one is a compromise.)
 First have to convert the polar coordinates into cartesian coordinates. 
 
+Current problems: can't execute a dinamic function (which depends on wich event I'm trying to check for) and at the same time save on a "global" var.
+-------
+
 
 problems: 
 could take less than a day to complete a cycle.
