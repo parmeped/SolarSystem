@@ -61,7 +61,7 @@ func (sys *System) AddCheck(check IDailyCheck) {
 func Rotate(days int, sys *System) {
 	for i := 0; i < days; i++ {
 		for _, v := range sys.Positions {
-			v.Move()
+			pos.Move(v)
 		}
 		//performDroughCheck(sys) // first event check.
 	}
@@ -72,7 +72,7 @@ func Rotate(days int, sys *System) {
 func RotateAndExecute(days int, sys *System) {
 	for i := 0; i < days; i++ {
 		for _, v := range sys.Positions {
-			v.Move()
+			pos.Move(v)
 		}
 		for _, v := range sys.DailyChecks {
 			v.DailyCheck(sys, i)

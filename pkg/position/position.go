@@ -38,7 +38,7 @@ func New(p pl.Planet) *Position {
 
 // Maybe a global config?
 // Moves a planet 1 day.
-func (p *Position) Move() {
+func Move(p *Position) {
 	if p.Planet.Rotation_grades > 0 {
 		p.ClockWisePosition = p.ClockWisePosition + p.Planet.Rotation_grades
 		if p.ClockWisePosition >= 360 {
@@ -158,9 +158,11 @@ func timeToStartingPoint(p1, p2 *Position) float32 {
 func ConvertPolarToCartesian(po *Position) Coordinate {
 	pl := po.Planet
 	grades := float64(po.ClockWisePosition)
+	x, y := pl.Distance*float32((m.Cos(grades))), pl.Distance*float32((m.Sin(grades)))
+	x, y = float32(m.Floor(float64(x)*100)/100), float32(m.Floor(float64(y)*100)/100)
 	return Coordinate{
 		&pl,
-		pl.Distance * float32((m.Cos(grades))),
-		pl.Distance * float32((m.Sin(grades))),
+		x,
+		y,
 	}
 }

@@ -51,7 +51,7 @@ func GetOptimalAlignmentsForCycle(cycleDays int, sys *sol.System) (int, []int) {
 
 // daily check function used for daily checks on a system after it rotates one day
 func (opt optimalAlignment) DailyCheck(sys *sol.System, dayChecked int) {
-	isAligned, coords := checkAlignmentForPositions(sys.Positions)
+	isAligned, coords := CheckAlignmentForPositions(sys.Positions)
 	if isAligned {
 		// sun coordinate
 		sunCoord := pos.Coordinate{}
@@ -66,7 +66,7 @@ func (opt optimalAlignment) DailyCheck(sys *sol.System, dayChecked int) {
 }
 
 // Checks if {n} positions are aligned. Also returns the positions converted to coordinates
-func checkAlignmentForPositions(positions []*pos.Position) (bool, *[]pos.Coordinate) {
+func CheckAlignmentForPositions(positions []*pos.Position) (bool, *[]pos.Coordinate) {
 	coordinates := []pos.Coordinate{}
 	for _, v := range positions {
 		coordinates = append(coordinates, pos.ConvertPolarToCartesian(v))
@@ -92,12 +92,18 @@ func checkAlignmentForCoordinates(coords *[]pos.Coordinate) (bool, *[]pos.Coordi
 		coord2 := (*coords)[k+1]
 		coord3 := (*coords)[k+2] // this is the common point checked.
 
-		// find slopes of coordinates and check between a common point
-		slopeA := float64((coord1.Y - coord3.Y) / (coord1.X - coord3.X))
-		slopeB := float64((coord3.Y - coord2.Y) / (coord3.X - coord2.X))
+		// // find slopes of coordinates and check between a common point
+		// slopeA := (coord1.Y - coord3.Y) / (coord1.X - coord3.X)
+		// slopeB := (coord3.Y - coord2.Y) / (coord3.X - coord2.X)
+
+		slope := coord1.X*(coord2.Y-coord3.Y) +
+			coord2.X*(coord3.Y-coord1.Y) +
+			coord3.X*(coord1.Y-coord2.Y)
+
+		//slopeA, slopeB = m.Floor(slopeA*100)/100, m.Floor(slopeB*100)/100
 
 		// could convert to int, for slope checking and performance gain?
-		if int(slopeA) == int(slopeB) {
+		if slope == 0 {
 
 			aligned = true
 			// would break otherwise, and all points have been checked
