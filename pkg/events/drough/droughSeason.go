@@ -1,4 +1,4 @@
-package events
+package drough
 
 // this package should expose methods to calculate the drough season.
 
@@ -57,7 +57,7 @@ func getDroughSeasonsForCycle(cycleDays int, positions []*pos.Position) (int, []
 	}
 
 	timeStart, timeAny, amount := pos.GetTwoPointsIntersections(positions[index], positions[secondIndex])
-	var intersect = pos.Intersections{timeStart, timeAny, amount, positions[index], positions[secondIndex]}
+	var intersect = pos.Intersections{timeStart, timeAny, amount, positions[index], positions[secondIndex]} // unkeyed fields?
 	return checkForDroughs(intersect, cycleDays, positions)
 }
 

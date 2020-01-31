@@ -23,13 +23,13 @@ func main() {
 
 	DB := repo.New()
 	sys := DB.SolarSystem
-
 	timeStamp()
-	sol.Rotate(16, sys)
+
+	amount, _ := e.GetOptimalAlignmentsForCycle(1, sys)
+	fmt.Printf("amount: %v", amount)
+	//sol.Rotate(16, sys)
 	showPlanetsPositions(sys)
 
-	alligned := e.CheckAlignmentForPositions(sys.Positions)
-	fmt.Printf("Alligned? %v \n", alligned)
 }
 
 func checkErr(err error) {

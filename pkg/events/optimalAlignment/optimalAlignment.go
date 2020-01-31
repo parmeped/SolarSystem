@@ -1,15 +1,17 @@
-package events
+package optimalalignment
 
 // this package should expose methods to calculate the optimal alignment.
 
 import (
-	"fmt"
 	m "math"
 
-	h "github.com/SolarSystem/pkg/helpers"
+	e "github.com/SolarSystem/pkg/events"
 	pos "github.com/SolarSystem/pkg/position"
 	sol "github.com/SolarSystem/pkg/system"
 )
+
+type optimalAlignment struct {
+}
 
 // GetOptimalAlignmentsForYears returns how many optimal climate alignments happen in {n} years
 func GetOptimalAlignmentsForYears(years int, sys *sol.System) int {
@@ -39,20 +41,23 @@ func GetOptimalAlignmentsForDays(days int, sys *sol.System) int {
 // checks if there are optimalAlignments on a cycle. {amountOfOptimals, []daysOfOptimals}
 func getOptimalAlignmentsForCycle(cycleDays int, sys *sol.System) (int, []int) {
 	// for each day on the cycle, see if there's an alignment. how can you pass a function that's executed after each day it rotates?
-	// TODO: maybe when returning true, should also check for alignment with sun
-	event := Events{}
 
-	passFunction := []h.IExecute{} // small compromise so that RotateAndExecute can receive more than 1 function at a time. In theory
-	passFunction = append(passFunction, event)
+	optAlignment := optimalAlignment{}
+	event := e.New("OptimalAlignment")
+	sys.AddEvent(event)
+
+	passFunction := []sol.IExecute{} // small compromise so that RotateAndExecute can receive more than 1 function at a time. In theory
+	passFunction = append(passFunction, &optAlignment)
 
 	sol.RotateAndExecute(cycleDays, sys, passFunction)
 
 	return 0, []int{}
 }
 
-// TODO: Why it's not implementing this?
-func (e *Events) Execute() {
-	fmt.Print("Helou World!")
+// TODO: how can I retrieve this event?
+// Middleware function for Polymorfism implementation
+func DailyCheck(sys *sol.System) {
+	days := &(*sys.Events)["OptimalAlignment"]
 }
 
 // Checks if {n} positions are aligned.
@@ -64,6 +69,7 @@ func checkAlignmentForPositions(positions []*pos.Position) bool {
 	return checkAlignmentForCoordinates(&coordinates)
 }
 
+// TODO: maybe when returning true, should also check for alignment with sun
 // TODO: Somewhere here we have to NOT check on drough days
 // checks if {n} coordinates are aligned.
 func checkAlignmentForCoordinates(coords *[]pos.Coordinate) bool {

@@ -1,21 +1,36 @@
 package system
 
 import (
-	h "github.com/SolarSystem/pkg/helpers"
+	e "github.com/SolarSystem/pkg/events"
 	p "github.com/SolarSystem/pkg/planets"
 	pos "github.com/SolarSystem/pkg/position"
 )
 
+// Base system
 type System struct {
 	Positions []*pos.Position
+	Events    *[]e.Event
 }
 
-func New(ps []p.Planet) *System {
+// IExecute is implemented by any event that wants to have a daily check performed.
+type IExecute interface {
+	DailyCheck(sys *System)
+}
+
+// Creates a new System with some planets
+func New(planets []p.Planet) *System {
 	sys := System{}
-	for _, v := range ps {
+	for _, v := range planets {
 		sys.Positions = append(sys.Positions, pos.New(v))
 	}
+	sys.Events = e.NewEvents()
 	return &sys
+}
+
+// TODO: See if this can be implemented elsewhere
+// AddEvent appends a new event to the system
+func (sys *System) AddEvent(event *e.Event) {
+	*sys.Events = append(*sys.Events, (*event))
 }
 
 // TODO: concurrency candidate.
@@ -29,13 +44,14 @@ func Rotate(days int, sys *System) {
 	}
 }
 
-func RotateAndExecute(days int, sys *System, fn []h.IExecute) {
+// RotateAndExecutes rotates {n} days and executes a function for each day.
+func RotateAndExecute(days int, sys *System, fn []IExecute) {
 	for i := 0; i < days; i++ {
 		for _, v := range sys.Positions {
 			pos.Move(v)
 		}
 		for _, v := range fn {
-			v.Execute()
+			v.DailyCheck(sys)
 		}
 	}
 }
