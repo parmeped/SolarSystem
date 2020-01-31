@@ -1,7 +1,7 @@
 package position
 
 import (
-	m "math"
+	"fmt"
 
 	h "github.com/SolarSystem/pkg/helpers"
 	pl "github.com/SolarSystem/pkg/planets"
@@ -12,18 +12,12 @@ type Position struct {
 	ClockWisePosition float32
 }
 
-type Intersections struct {
-	TimeToStart         float32
-	TimeToFirst         float32
-	AmountIntersections float32
-	PositionA           *Position
-	PositionB           *Position
-}
-
-type Coordinate struct {
-	Planet *pl.Planet
-	X      float32
-	Y      float32
+type intersections struct {
+	timeToStart         float32
+	timeToFirst         float32
+	amountIntersections float32
+	positionA           *Position
+	positionB           *Position
 }
 
 func New(p pl.Planet) *Position {
@@ -36,9 +30,11 @@ func New(p pl.Planet) *Position {
 
 // TODO: The code is all over the place, and the functions have weird names. try and move a couple things out, and change func names. If there's time, see if it can be more generic
 
-// Maybe a global config?
+// TODO: Logic here should be something that checks for circle completition, thus restarting.
+// Maybe a global config? We can momentarily assume the rotation_grades property COULD just be negative, indicating counterclock movement.
+// this can be improved if we multiply the amount of grades it has to move. days * grades, should give amount.
 // Moves a planet 1 day.
-func (p *Position) Move() {
+func Move(p *Position) {
 	if p.Planet.Rotation_grades > 0 {
 		p.ClockWisePosition = p.ClockWisePosition + p.Planet.Rotation_grades
 		if p.ClockWisePosition >= 360 {
@@ -84,7 +80,109 @@ func AngleBetweenPositions(p1 *Position, p2 *Position) (float32, bool) {
 	return angle, shouldCheckDrough
 }
 
-// DistanceBetweenPositions calculates the distance between two points.
+// DistanceBetweenPositions calculates the distance between two points. 
+
+
+// GetDroughSeasonsForYears returns the amount of droughs there's on a certain amount of years
+// TODO: see if the hardcoded 365 value can be turned into a cfg call. What about leap years?
+func GetDroughSeasonsForYears(years int, positions []*Position) int {
+	return GetDroughSeasonsForDays((years * 365), positions)
+}
+
+// GetDroughSeasonsForDays returns the amount of droughs there's on a certain amount of days
+func GetDroughSeasonsForDays(days int, positions []*Position) int {
+	cycleDays := TimeToSystemCycle(positions[0], positions[1], positions[2])
+	multiplier := days / int(cycleDays)
+	daysRemaining := days % int(cycleDays)
+	droughSeasons, droughDays := GetDroughSeasonsForCycle(int(cycleDays), positions)
+	droughSeasons = droughSeasons * multiplier
+
+	for _, v := range droughDays {
+		if (v <= daysRemaining) {
+			droughSeasons++
+		} else {
+			break
+		}
+	}
+	return droughSeasons
+}
+
+// GetDroughSeasonsForCycle calculates how many times there's a Drough season on a cycle.
+func GetDroughSeasonsForCycle(cycleDays int, positions []*Position) (int, []int) {
+	// I know there's a least amount of time a couple of points can intersect. The check has to be for each pair of points
+	fastestCycle, index, secondIndex := cycleDays, 0, 0
+
+	// first get the two planets which are fastest to complete cycle
+	for k, v := range positions {
+		if int(v.Planet.TimeToCycle) < fastestCycle {
+			index = k
+			fastestCycle = int(v.Planet.TimeToCycle)
+		}
+	}
+	fastestCycle = cycleDays
+
+	for k, v := range positions {
+		if k != index && int(v.Planet.TimeToCycle) < fastestCycle {
+			secondIndex = k
+			fastestCycle = int(v.Planet.TimeToCycle)
+		}
+	}
+
+	timeStart, timeAny, amount := GetTwoPointsIntersections(positions[index], positions[secondIndex])
+	var intersect = intersections{timeStart, timeAny, amount, positions[index], positions[secondIndex]}
+	return checkForDroughs(intersect, cycleDays, positions)
+}
+
+// checks if there are droughs on a cycle. {amountOfDroughs, []daysOfDroughs}
+func checkForDroughs(intersect intersections, cycleDays int, positions []*Position) (int, []int) {
+
+	// the period starts on a drough, since all planets start on pos 0
+	amountOfDroughs, days := 1, int(intersect.timeToFirst)
+	positionToCheck, positionToCompare := &Position{}, &Position{}
+	daysOfDroughs := []int{0} // TODO: this feels like a hack!
+
+	// get the fastest planet
+	if intersect.positionA.Planet.TimeToCycle > intersect.positionB.Planet.TimeToCycle {
+		positionToCompare = intersect.positionB
+	} else {
+		positionToCompare = intersect.positionA
+	}
+
+	// get the position to check
+	for _, v := range positions {
+		if v != intersect.positionA && v != intersect.positionB {
+			positionToCheck = v
+		}
+	}
+
+	var positionPlanetToCheck, positionPlanetToCompare int
+	for i := days; i < cycleDays; {
+		positionPlanetToCheck = GetPositionAtTime(&positionToCheck.Planet, i)
+		positionPlanetToCompare = GetPositionAtTime(&positionToCompare.Planet, i)
+		i = i + days
+		if checkPositionsForDrough(positionPlanetToCheck, positionPlanetToCompare) {
+			daysOfDroughs = append(daysOfDroughs, i)
+			amountOfDroughs++
+		}
+	}
+	return amountOfDroughs, daysOfDroughs
+}
+
+// drough check helper. Compares two positions to find a drough
+func checkPositionsForDrough(positionToCheck, positionToCompare int) bool {
+	result := positionToCheck - positionToCompare
+	fmt.Printf("posCheck: %v, posCompare: %v, result: %v \n", positionToCheck, positionToCompare, result)
+
+	if result < 0 {
+		result = result * -1
+	}
+
+	if result == 180 || result == 0 {
+		return true
+	} else {
+		return false
+	}
+}
 
 // GetTwoPointsIntersections sees how many times two positions intersect. {timeStart, timeAnyPoint, amountIntersects}
 // TODO: check if at given result time, there's an intersection with the remaining point. Further testing! this is just one check. there's more apparently
@@ -139,6 +237,7 @@ func GetPositionAtTime(p *pl.Planet, days int) int {
 	}
 }
 
+
 // get the time for n positions to complete a cycle.
 func TimeToSystemCycle(p1, p2 *Position, positions ...*Position) float32 {
 	result := timeToStartingPoint(p1, p2)
@@ -152,15 +251,4 @@ func TimeToSystemCycle(p1, p2 *Position, positions ...*Position) float32 {
 
 func timeToStartingPoint(p1, p2 *Position) float32 {
 	return float32(h.LCM(int(p1.Planet.TimeToCycle), int(p2.Planet.TimeToCycle)))
-}
-
-// ConvertPolarToCartesian converts the position of a point and returns a cartesian c. The angular speed of the moving objects is in radians / t.
-func ConvertPolarToCartesian(po *Position) Coordinate {
-	pl := po.Planet
-	grades := float64(po.ClockWisePosition)
-	return Coordinate{
-		&pl,
-		pl.Distance * float32((m.Cos(grades))),
-		pl.Distance * float32((m.Sin(grades))),
-	}
 }

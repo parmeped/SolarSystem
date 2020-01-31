@@ -7,7 +7,7 @@ import (
 
 	//h "github.com/SolarSystem/pkg/helpers"
 
-	o "github.com/SolarSystem/pkg/events/optimalalignment"
+	e "github.com/SolarSystem/pkg/events"
 	repo "github.com/SolarSystem/pkg/repository"
 	sol "github.com/SolarSystem/pkg/system"
 	"github.com/SolarSystem/pkg/utl/config"
@@ -23,13 +23,13 @@ func main() {
 
 	DB := repo.New()
 	sys := DB.SolarSystem
-	timeStamp()
 
-	days, _ := o.GetOptimalAlignmentsForCycle(2, sys)
-	fmt.Printf("days %v", days)
-	//sol.Rotate(16, sys)
+	timeStamp()
+	sol.Rotate(16, sys)
 	showPlanetsPositions(sys)
-	showSystemData(sys)
+
+	alligned := e.CheckAlignmentForPositions(sys.Positions)
+	fmt.Printf("Alligned? %v \n", alligned)
 }
 
 func checkErr(err error) {
@@ -53,14 +53,6 @@ func showPlanetsData(sol *sol.System) {
 			k, v.Planet.Name, v.Planet.Distance, v.Planet.Rotation_grades, v.Planet.TimeToCycle)
 	}
 	fmt.Print("-------------------------------\n")
-}
-
-func showSystemData(sol *sol.System) {
-	fmt.Print("Reading system data... \n")
-	for k, v := range sol.Events {
-		fmt.Printf("Index: %v, Name: %v, Days event: %v, amountDays: %v \n",
-			k, v.Name, v.DaysEvent, v.AmountDays)
-	}
 }
 
 func timeStamp() {
