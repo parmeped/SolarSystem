@@ -7,7 +7,8 @@ import (
 
 	//h "github.com/SolarSystem/pkg/helpers"
 
-	o "github.com/SolarSystem/pkg/events/optimalalignment"
+	//o "github.com/SolarSystem/pkg/events/optimalalignment"
+	r "github.com/SolarSystem/pkg/events/rainseason"
 	repo "github.com/SolarSystem/pkg/repository"
 	sol "github.com/SolarSystem/pkg/system"
 	"github.com/SolarSystem/pkg/utl/config"
@@ -25,9 +26,9 @@ func main() {
 	sys := DB.SolarSystem
 	timeStamp()
 
-	days := o.GetOptimalAlignmentsForYears(10, sys)
+	days := r.GetRainSeasonsForYears(1, sys)
 	fmt.Printf("days %v \n", days)
-	
+	showSystemData(sys)
 }
 
 func checkErr(err error) {

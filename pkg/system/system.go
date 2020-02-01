@@ -5,6 +5,7 @@ import (
 	pos "github.com/SolarSystem/pkg/position"
 )
 
+// TODO: remove sun from here for consistency
 // Base system
 type System struct {
 	Positions   []*pos.Position
@@ -18,6 +19,7 @@ type Event struct {
 	Name       string
 	DaysEvent  []int
 	AmountDays int
+	PeakDay int
 }
 
 // IExecute is implemented by any event that wants to have a daily check performed.
@@ -43,6 +45,7 @@ func (sys *System) NewEvent(name string) {
 	event := &Event{
 		name,
 		[]int{},
+		0,
 		0,
 	}
 	sys.Events[name] = event

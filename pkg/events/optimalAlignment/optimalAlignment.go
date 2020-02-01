@@ -4,13 +4,12 @@ package optimalalignment
 
 import (
 	"math"
-	"fmt"
 
 	pos "github.com/SolarSystem/pkg/position"
 	sol "github.com/SolarSystem/pkg/system"
 )
 
-type optimalAlignment struct {
+type OptimalAlignment struct {
 	Name string
 }
 
@@ -26,6 +25,11 @@ func GetOptimalAlignmentsForDays(days int, sys *sol.System) int {
 	cycleDays := pos.TimeToSystemCycle(sys.Positions[0], sys.Positions[1], sys.Positions[2])
 	multiplier := days / int(cycleDays)
 	daysRemaining := days % int(cycleDays)
+
+	// Register event & check
+	optAlignEvent := OptimalAlignment{"OptimalAlignment"}
+	sys.AddCheck(optAlignEvent)
+	sys.NewEvent(optAlignEvent.Name)
 
 	optimalSeasons, optimalDays := getOptimalAlignmentsForCycle(int(cycleDays), sys)
 	optimalSeasons = optimalSeasons * multiplier
@@ -43,27 +47,19 @@ func GetOptimalAlignmentsForDays(days int, sys *sol.System) int {
 
 // checks if there are optimalAlignments on a cycle. {amountOfOptimals, []daysOfOptimals}
 func getOptimalAlignmentsForCycle(cycleDays int, sys *sol.System) (int, []int) {
-	
-	// Register event & check
-	optAlignment := optimalAlignment{"OptimalAlignment"}
-	sys.AddCheck(optAlignment)
-	sys.NewEvent(optAlignment.Name)
-
 	// Execute a complete cycle check on the system. 
 	sol.RotateAndExecute(cycleDays, sys)
-
-	// The amount and the days should be already loaded
+		
 	return sys.Events["OptimalAlignment"].AmountDays, sys.Events["OptimalAlignment"].DaysEvent
 }
 
 // daily check function used for daily checks on a system after it rotates one day
-func (opt optimalAlignment) DailyCheck(sys *sol.System, dayChecked int) {
-	isAligned, coords := checkAlignmentForPositions(sys.Positions)
+func (opt OptimalAlignment) DailyCheck(sys *sol.System, dayChecked int) {
+	isAligned, coords := pos.ConvertToCartesianAndExecute(sys.Positions, checkAlignmentForCoordinates)	
 	if isAligned {
 		// sun coordinates to check if planets are also aligned with the sun. 		
 		*coords = append(*coords, *sys.SunCoordinates)
-		if isAligned, _ = checkAlignmentForCoordinates(coords); !isAligned {
-			fmt.Printf("Day: %v, Coordinates: %v \n", dayChecked, coords)
+		if isAligned, _ = checkAlignmentForCoordinates(coords); !isAligned {			
 			sys.Events["OptimalAlignment"].AmountDays++
 			sys.Events["OptimalAlignment"].DaysEvent = append(sys.Events["OptimalAlignment"].DaysEvent, dayChecked)
 		}
@@ -71,14 +67,15 @@ func (opt optimalAlignment) DailyCheck(sys *sol.System, dayChecked int) {
 	}
 }
 
-// Checks if {n} positions are aligned. Also returns the positions converted to coordinates
-func checkAlignmentForPositions(positions []*pos.Position) (bool, *[]pos.Coordinate) {
-	coordinates := []pos.Coordinate{}
-	for _, v := range positions {
-		coordinates = append(coordinates, pos.ConvertPolarToCartesian(v))
-	}
-	return checkAlignmentForCoordinates(&coordinates)
-}
+// TODO: Check if this function is necessary
+// // Checks if {n} positions are aligned. Also returns the positions converted to coordinates
+// func checkAlignmentForPositions(positions []*pos.Position) (bool, *[]pos.Coordinate) {
+// 	coordinates := []pos.Coordinate{}
+// 	for _, v := range positions {
+// 		coordinates = append(coordinates, pos.ConvertPolarToCartesian(v))
+// 	}
+// 	return checkAlignmentForCoordinates(&coordinates)
+// }
 
 
 // checks if {n} coordinates are aligned.

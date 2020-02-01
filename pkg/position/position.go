@@ -20,11 +20,15 @@ type Intersections struct {
 	PositionB           *Position
 }
 
+// TODO: check if the planet can be removed
 type Coordinate struct {
 	Planet *pl.Planet
 	X      float32
 	Y      float32
 }
+
+// CoordinatesBasedCheck is used to convert positions to coordinates and implement a different check based on the return
+type CoordinatesBasedCheck func(coords *[]Coordinate) (bool, *[]Coordinate)
 
 func New(p pl.Planet) *Position {
 	pos := Position{
@@ -150,6 +154,7 @@ func TimeToSystemCycle(p1, p2 *Position, positions ...*Position) float32 {
 	return result
 }
 
+
 func timeToStartingPoint(p1, p2 *Position) float32 {
 	return float32(h.LCM(int(p1.Planet.TimeToCycle), int(p2.Planet.TimeToCycle)))
 }
@@ -166,4 +171,13 @@ func ConvertPolarToCartesian(po *Position) Coordinate {
 		x,
 		y,
 	}
+}
+
+// ConvertToCartesianAndExecute converts polar positions to cartesian and then executes a func
+func ConvertToCartesianAndExecute(positions []*Position, fn CoordinatesBasedCheck) (bool, *[]Coordinate) {
+	coordinates := []Coordinate{}
+	for _, v := range positions {
+		coordinates = append(coordinates, ConvertPolarToCartesian(v))
+	}
+	return fn(&coordinates)
 }
