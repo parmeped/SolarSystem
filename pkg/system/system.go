@@ -10,6 +10,7 @@ type System struct {
 	Positions   []*pos.Position
 	DailyChecks []IDailyCheck
 	Events      map[string]*Event
+	SunCoordinates *pos.Coordinate // what if it has multiple suns? 
 }
 
 // Event struct
@@ -32,6 +33,8 @@ func New(planets []p.Planet) *System {
 	}
 	sys.DailyChecks = newChecks()
 	sys.Events = make(map[string]*Event)
+	theSun := p.New(0, 0, "Sun")
+	sys.SunCoordinates = &pos.Coordinate{theSun, 0, 0}	
 	return &sys
 }
 
@@ -71,11 +74,11 @@ func Rotate(days int, sys *System) {
 // RotateAndExecutes rotates {n} days and executes a function for each day. STARTS ON POSITION 0
 func RotateAndExecute(days int, sys *System) {
 	for i := 0; i < days; i++ {
-		for _, v := range sys.Positions {
-			pos.Move(v)
-		}
 		for _, v := range sys.DailyChecks {
 			v.DailyCheck(sys, i)
+		}
+		for _, v := range sys.Positions {
+			pos.Move(v)
 		}
 	}
 }

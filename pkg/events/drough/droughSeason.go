@@ -96,7 +96,8 @@ func checkForDroughs(intersect pos.Intersections, cycleDays int, positions []*po
 	return amountOfDroughs, daysOfDroughs
 }
 
-// drough check helper. Compares two positions to find a drough
+// TODO: [Improvement] This could clearly use the collinearity function, but on the other hand this is a super small and simple checking method. 
+// drough check helper. Compares two positions to find a drough. 
 func checkPositionsForDrough(positionToCheck, positionToCompare int) bool {
 	result := positionToCheck - positionToCompare
 	fmt.Printf("posCheck: %v, posCompare: %v, result: %v \n", positionToCheck, positionToCompare, result)

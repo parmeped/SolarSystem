@@ -25,17 +25,9 @@ func main() {
 	sys := DB.SolarSystem
 	timeStamp()
 
-	sol.Rotate(180, sys)
-	showPlanetsPositions(sys)
-
-	align, _ := o.CheckAlignmentForPositions(sys.Positions)
-	fmt.Printf("align %v \n", align)
-
-	days, _ := o.GetOptimalAlignmentsForCycle(100, sys)
+	days := o.GetOptimalAlignmentsForYears(10, sys)
 	fmt.Printf("days %v \n", days)
-	//sol.Rotate(16, sys)
-	showPlanetsPositions(sys)
-	showSystemData(sys)
+	
 }
 
 func checkErr(err error) {

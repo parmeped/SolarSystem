@@ -157,8 +157,9 @@ func timeToStartingPoint(p1, p2 *Position) float32 {
 // ConvertPolarToCartesian converts the position of a point and returns a cartesian c. The angular speed of the moving objects is in radians / t.
 func ConvertPolarToCartesian(po *Position) Coordinate {
 	pl := po.Planet
-	grades := float64(po.ClockWisePosition)
-	x, y := pl.Distance*float32((m.Cos(grades))), pl.Distance*float32((m.Sin(grades)))
+	// grades to radian conversion
+	radians := float64(po.ClockWisePosition * 0.015708)
+	x, y := pl.Distance*float32((m.Cos(radians))), pl.Distance*float32((m.Sin(radians)))
 	x, y = float32(m.Floor(float64(x)*100)/100), float32(m.Floor(float64(y)*100)/100)
 	return Coordinate{
 		&pl,
