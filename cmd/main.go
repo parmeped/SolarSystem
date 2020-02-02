@@ -56,9 +56,11 @@ func showPlanetsData(sol *sol.System) {
 
 func showSystemData(sol *sol.System) {
 	fmt.Print("Reading system data... \n")
-	for k, v := range sol.Events {
-		fmt.Printf("Index: %v, Name: %v, Days event: %v, amountDays: %v \n",
-			k, v.Name, v.DaysEvent, v.AmountDays)
+	for _, v := range sol.Events {
+		// fmt.Printf("Index: %v, Name: %v, Days event: %v, amountDays: %v \n",
+		// 	k, v.Name, v.DaysEvent, v.AmountDays)
+		fmt.Print(v)
+		fmt.Print("\n")
 	}
 }
 

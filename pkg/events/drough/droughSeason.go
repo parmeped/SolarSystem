@@ -27,7 +27,7 @@ func GetDroughtSeasonsForDays(days int, sys *sol.System) int {
 	multiplier := days / int(cycleDays)
 	daysRemaining := days % int(cycleDays)
 
-	// Register event & check
+	// Register event.
 	droughEvent := DroughtSeason{"DroughtSeason"}	
 	sys.NewEvent(droughEvent.Name)
 
@@ -126,15 +126,3 @@ func checkPositionsForDrought(positionToCheck, positionToCompare int) bool {
 	}
 }
 
-// TODO: check if this func is usefull
-// Seems to be working fine.
-func CheckForDrought(p1 *pos.Position, p2 *pos.Position) bool {
-	angle, _ := pos.AngleBetweenPositions(p1, p2)
-	//fmt.Printf("Drought Check Angle: %v \n", angle)
-
-	if angle == 180 || p1.ClockWisePosition == p2.ClockWisePosition {
-		return true
-	} else {
-		return false
-	}
-}

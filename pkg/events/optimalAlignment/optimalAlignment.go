@@ -13,7 +13,7 @@ type OptimalAlignment struct {
 	Name string
 }
 
-// TODO: here, as in other methods, we should make a days calculator as to get amount of days on years. 
+// TODO: here, as in other methods, we should make a days calculator as to get amount of days on years.
 // GetOptimalAlignmentsForYears returns how many optimal climate alignments happen in {n} years
 func GetOptimalAlignmentsForYears(years int, sys *sol.System) int {
 	return GetOptimalAlignmentsForDays((years * 365), sys)
@@ -34,7 +34,7 @@ func GetOptimalAlignmentsForDays(days int, sys *sol.System) int {
 	optimalSeasons, optimalDays := getOptimalAlignmentsForCycle(int(cycleDays), sys)
 	optimalSeasons = optimalSeasons * multiplier
 
-	// see if there's more events happening 
+	// see if there's more events happening
 	for _, v := range optimalDays {
 		if v <= daysRemaining {
 			optimalSeasons++
@@ -47,19 +47,19 @@ func GetOptimalAlignmentsForDays(days int, sys *sol.System) int {
 
 // checks if there are optimalAlignments on a cycle. {amountOfOptimals, []daysOfOptimals}
 func getOptimalAlignmentsForCycle(cycleDays int, sys *sol.System) (int, []int) {
-	// Execute a complete cycle check on the system. 
+	// Execute a complete cycle check on the system.
 	sol.RotateAndExecute(cycleDays, sys)
-		
+
 	return sys.Events["OptimalAlignment"].AmountDays, sys.Events["OptimalAlignment"].DaysEvent
 }
 
 // daily check function used for daily checks on a system after it rotates one day
 func (opt OptimalAlignment) DailyCheck(sys *sol.System, dayChecked int) {
-	isAligned, coords := pos.ConvertToCartesianAndExecute(sys.Positions, checkAlignmentForCoordinates)	
+	isAligned, coords := pos.ConvertToCartesianAndExecute(sys.Positions, CheckAlignmentForCoordinates)
 	if isAligned {
-		// sun coordinates to check if planets are also aligned with the sun. 		
+		// sun coordinates to check if planets are also aligned with the sun.
 		*coords = append(*coords, *sys.SunCoordinates)
-		if isAligned, _ = checkAlignmentForCoordinates(coords); !isAligned {			
+		if isAligned, _ = CheckAlignmentForCoordinates(coords); !isAligned {
 			sys.Events["OptimalAlignment"].AmountDays++
 			sys.Events["OptimalAlignment"].DaysEvent = append(sys.Events["OptimalAlignment"].DaysEvent, dayChecked)
 		}
@@ -77,9 +77,8 @@ func (opt OptimalAlignment) DailyCheck(sys *sol.System, dayChecked int) {
 // 	return checkAlignmentForCoordinates(&coordinates)
 // }
 
-
 // checks if {n} coordinates are aligned.
-func checkAlignmentForCoordinates(coords *[]pos.Coordinate) (bool, *[]pos.Coordinate) {
+func CheckAlignmentForCoordinates(coords *[]pos.Coordinate) (bool, *[]pos.Coordinate) {
 	aligned := false
 	coordsLength := len(*coords)
 
@@ -92,16 +91,15 @@ func checkAlignmentForCoordinates(coords *[]pos.Coordinate) (bool, *[]pos.Coordi
 	for k := range *coords {
 		coord1 := (*coords)[k]
 		coord2 := (*coords)[k+1]
-		coord3 := (*coords)[k+2] 
+		coord3 := (*coords)[k+2]
 
 		// find slopes of coordinates and check between a common point
 		slopeA := float64((coord1.Y - coord3.Y) / (coord1.X - coord3.X))
 		slopeB := float64((coord3.Y - coord2.Y) / (coord3.X - coord2.X))
 
-
 		// TODO: [Improvement] maybe improve time frames so that this check is more precise.
-		// this rounds to later determine collinearity. Since we check once per day, this is the compromise being made. 
-		// It would work better if checks were done on smaller time frames, but would have a higher impact on performance. 
+		// this rounds to later determine collinearity. Since we check once per day, this is the compromise being made.
+		// It would work better if checks were done on smaller time frames, but would have a higher impact on performance.
 		slopeA, slopeB = math.Floor(slopeA*10)/10, math.Floor(slopeB*10)/10
 
 		if slopeA == slopeB {

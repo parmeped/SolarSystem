@@ -8,10 +8,10 @@ import (
 // TODO: remove sun from here for consistency
 // Base system
 type System struct {
-	Positions   []*pos.Position
-	DailyChecks []IDailyCheck
-	Events      map[string]*Event
-	SunCoordinates *pos.Coordinate // what if it has multiple suns? 
+	Positions      []*pos.Position
+	DailyChecks    []IDailyCheck
+	Events         map[string]*Event
+	SunCoordinates *pos.Coordinate // what if it has multiple suns?
 }
 
 // Event struct
@@ -19,7 +19,7 @@ type Event struct {
 	Name       string
 	DaysEvent  []int
 	AmountDays int
-	PeakDay int
+	PeakDay    int
 }
 
 // IExecute is implemented by any event that wants to have a daily check performed.
@@ -36,7 +36,7 @@ func New(planets []p.Planet) *System {
 	sys.DailyChecks = newChecks()
 	sys.Events = make(map[string]*Event)
 	theSun := p.New(0, 0, "Sun")
-	sys.SunCoordinates = &pos.Coordinate{theSun, 0, 0}	
+	sys.SunCoordinates = &pos.Coordinate{theSun, 0, 0}
 	return &sys
 }
 
