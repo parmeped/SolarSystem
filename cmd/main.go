@@ -1,34 +1,29 @@
 package main
 
 import (
-	"flag"
 	"fmt"
-	"time"
+	
 
 	//h "github.com/SolarSystem/pkg/helpers"
 
-	//o "github.com/SolarSystem/pkg/events/optimalalignment"
-	r "github.com/SolarSystem/pkg/events/rainseason"
+	//e "github.com/SolarSystem/pkg/events"
 	repo "github.com/SolarSystem/pkg/repository"
 	sol "github.com/SolarSystem/pkg/system"
+	"github.com/SolarSystem/pkg/job"
 	"github.com/SolarSystem/pkg/utl/config"
 )
 
 func main() {
 
-	cfgPath := flag.String("p", "conf.local.yaml", "Path to config file")
-	flag.Parse()
+	cfg := config.Load()	
 
-	_, err := config.Load(*cfgPath)
-	checkErr(err)
-
+	// Load initial planets
 	DB := repo.New()
+	DB.SolarSystem = sol.New(cfg.Planets, cfg)
 	sys := DB.SolarSystem
-	timeStamp()
-
-	days := r.GetRainSeasonsForYears(1, sys)
-	fmt.Printf("days %v \n", days)
-	showSystemData(sys)
+	
+	job.CalculateModelForYears(3, sys, DB)
+	DB.ShowDaysModel()
 }
 
 func checkErr(err error) {
@@ -48,8 +43,8 @@ func showPlanetsPositions(sol *sol.System) {
 func showPlanetsData(sol *sol.System) {
 	fmt.Print("Reading data...\n")
 	for k, v := range sol.Positions {
-		fmt.Printf("Index: %v, Planet: %v, Distance: %v, RotationSpeed: %v, TimeToCylce: %v \n",
-			k, v.Planet.Name, v.Planet.Distance, v.Planet.Rotation_grades, v.Planet.TimeToCycle)
+		fmt.Printf("Index: %v, Planet: %v, Distance: %v, RotationSpeed: %v, OrbitalPeriod: %v \n",
+			k, v.Planet.Name, v.Planet.Distance, v.Planet.GradesPerDay, v.Planet.OrbitalPeriod)
 	}
 	fmt.Print("-------------------------------\n")
 }
@@ -64,9 +59,4 @@ func showSystemData(sol *sol.System) {
 	}
 }
 
-func timeStamp() {
-	fmt.Print("////////////////   Program starting... ////////////////// \n")
-	fmt.Printf("Time: %v \n", time.Now())
-	fmt.Print("-------------------------------\n")
 
-}

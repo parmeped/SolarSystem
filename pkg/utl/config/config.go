@@ -1,45 +1,49 @@
 package config
 
 import (
-	"fmt"
-	"io/ioutil"
 
-	pRepo "github.com/SolarSystem/pkg/planets"
-	sol "github.com/SolarSystem/pkg/system"
-	yaml "gopkg.in/yaml.v2"
+	"time"
+	"fmt"
+	
+	pRepo "github.com/SolarSystem/pkg/planets"	
+)
+
+// I believe daysInYear should always be higher. First, since a year is defined as the time it takes 
+const (
+	daysInYear 	 = 365  	
+	orbit 		 = 360
 )
 
 // Load returns Configuration struct
-func Load(path string) (*Configuration, error) {
-	bytes, err := ioutil.ReadFile(path)
-	if err != nil {
-		return nil, fmt.Errorf("error reading config file, %s", err)
-	}
-	var cfg = new(Configuration)
-	if err := yaml.Unmarshal(bytes, cfg); err != nil {
-		return nil, fmt.Errorf("unable to decode into struct, %v", err)
-	}
+func Load() *Configuration {
+	timeStamp()
 
-	planets := pRepo.Planets_Array
-	var db = Database{}
-	cfg.DB = &db
-	cfg.DB.SolarSystem = sol.New(planets)
+	return &Configuration{
+		pRepo.GetPlanets(orbit),
+		daysInYear,
+		time.Now(),
+		orbit,
+	}		
+}
 
-	return cfg, nil
+// GetOrbit gives the orbit
+// TODO: [Improvement] This shouldn't be loaded from here, but from the config after load.
+func GetOrbit() int {
+	return orbit
 }
 
 // Configuration holds data necessery for configuring application
-type Configuration struct {
-	DB        *Database
-	Time_Vars *Time_Vars
+type Configuration struct {		
+	Planets	         []pRepo.Planet
+	DaysInYear       int    	  
+	StartingDate     time.Time    
+	Orbit			 int	
 }
 
-type Time_Vars struct {
-	Days_in_year       int     `yaml:"days_in_a_year,omitempty"`
-	Years_to_calculate float32 `yaml:"years_to_calc,omitempty"`
-	Starting_date      string  `yaml:"starting_date,omitempty"`
-}
 
-type Database struct {
-	SolarSystem *sol.System
+func timeStamp() {
+	fmt.Print("////////////////   Program starting... ////////////////// \n")
+	fmt.Printf("Time: %v \n", time.Now())
+	fmt.Print("-------------------------------\n")
+
 }

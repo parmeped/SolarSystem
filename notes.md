@@ -13,8 +13,9 @@ every event happens n time on a cycle, therefore multiplying n * amountCycles = 
 // TODO: Check this! 
 All checks should start on day 1 and finish on day 360. Or, start on day 0 and finish on day 359. 
 
+
 #Objectives:
-Four questions // 2 out of 4. 
+Four questions // 4 out of 4. 
 Job to calculate the days. 
 Api access.
 Program upload. 
@@ -26,15 +27,20 @@ Concurrency implementation, especially on the job.
 Api explanation file.
 try ... catch.. defer.. panic handling 
 
+#IF there's time
+Re-check the optimal alignment calculator. 
+
 #Drought season:
 //DONE have to correct the implementation so that it checks for every position with each other, as to find the one with least intersections.
 //DONE have to calculate for N cycles. aka years
 
 #Rain season:
+// DONE
 This one is kind of attached to the most rain day. To calculate this: 
 It's rain season when the sun is inside the triangle, so make a method to calculate when the cartesian position of the planets make a triangle with the sun inside.
 
 #Most Rain:
+// DONE
 Day where the triangle's perimeter is the biggest. When cycling through the days, check for max perimeter. What if there's more than one day? Maybe at least save the date.
 
 #Optimum climate:
@@ -43,9 +49,28 @@ If there's time, improve for better checking. As of now, since the checks are be
 this is when the three points are collinear. AND! they are NOT collinear with the sun. (test for the remaining point? ORRR use the days there's drough! on those days, we should NOT check for collinearity. Maybe implement both approaches, since one's more efficient and the other one is a compromise.)
 //DONE First have to convert the polar coordinates into cartesian coordinates. 
 
-//DONE Current problems: can't execute a dinamic function (which depends on wich event I'm trying to check for) and at the same time save on a "global" var.
---
+#Job
 
+#Api
+
+#Program Upload
+
+------------
+#Current problems
+//DONE can't execute a dinamic function (which depends on wich event I'm trying to check for) and at the same time save on a "global" var.
+
+#Current Steps
+Create Job folder structure. // OK
+Expose all events on a single api. // OK
+Make the generic event conversion. // OK
+TODO: [Improvement] make it concurrent
+Work on Job, make it concurrent. Make the repository for storing the days. Make the coordinates be calculated once per day for each position. This could require a refactor of the position struct. // OK. Didn't make it concurrent :( 
+Work on Api, expose a single endpoint that returns the condition of the queried day.
+Work on Tests
+Work on try catch and defers. 
+See remaing problems, clean code. 
+Document Api.
+End 
 
 problems: 
 could take less than a day to complete a period.
