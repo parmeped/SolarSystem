@@ -3,12 +3,12 @@ package position
 import (
 	m "math"
 
-	c "github.com/SolarSystem/pkg/utl/config"
 	h "github.com/SolarSystem/pkg/helpers"
 	pl "github.com/SolarSystem/pkg/planets"
+	c "github.com/SolarSystem/pkg/utl/config"
 )
 
-// Position is used to attach a planet to a position. 
+// Position is used to attach a planet to a position.
 type Position struct {
 	Planet            pl.Planet
 	ClockWisePosition int
@@ -25,7 +25,7 @@ type Coordinate struct {
 // CoordinatesBasedCheck is used pass a func to the ConvertToCartesianAndExecute() and later exectue it.
 type CoordinatesBasedCheck func(coords *[]Coordinate) (bool, *[]Coordinate)
 
-// New returns a pointer to a position 
+// New returns a pointer to a position
 func New(p pl.Planet) *Position {
 	pos := Position{
 		p,
@@ -33,7 +33,6 @@ func New(p pl.Planet) *Position {
 	}
 	return &pos
 }
-
 
 // Move moves a planet 1 day.
 func Move(p *Position) {
@@ -68,37 +67,28 @@ func GetTwoPointsIntersections(p1, p2 *Position) (int, int, int) {
 func getRelativeSpeed(speed1, speed2 int) int {
 	if speed1 > speed2 {
 		return speed1 - speed2
-	} 
-	return speed2 - speed1	
+	}
+	return speed2 - speed1
 }
 
 // calculateMeetingPoints returns the amount of times they meet on a cycle
 func calculateMeetingPoints(time1, time2 int) int {
 	if time1 > time2 {
 		return time1 / time2
-	} 
-	return time2 / time1	
+	}
+	return time2 / time1
 }
 
-// GetPositionAtTime gets the position of a planet given a specific time.
+// GetPositionAtTime gets the position of a planet given a specific time. Works fine
 func GetPositionAtTime(p *pl.Planet, days int) int {
 	var travelledDistance = int(p.GradesPerDay) * days
 	orbit := c.GetOrbit()
 
-	// negative value
-	if travelledDistance < 0 {
-		travelledDistance = travelledDistance + ((travelledDistance / -orbit) * orbit)
-		if travelledDistance != 0 {
-			return orbit + travelledDistance
-		} 
-		return travelledDistance		
+	pos := travelledDistance % orbit
+	if pos < 0 {
+		return pos + orbit
 	}
-
-	// positive value
-	if travelledDistance > (orbit - 1) {
-		return travelledDistance - ((travelledDistance / orbit) * orbit)
-	}
-	return travelledDistance
+	return pos
 }
 
 // TimeToSystemCycle returns the time it takes for n positions to meet again at a starting point
@@ -149,7 +139,6 @@ func ConvertToCartesianAndExecute(positions []*Position, fn CoordinatesBasedChec
 	}
 	return fn(&coordinates)
 }
-
 
 // CheckAlignmentForCoordinates checks if {n} coordinates are aligned.
 func CheckAlignmentForCoordinates(coords *[]Coordinate) (bool, *[]Coordinate) {

@@ -1,6 +1,6 @@
 package system
 
-import (		
+import (
 	p "github.com/SolarSystem/pkg/planets"
 	pos "github.com/SolarSystem/pkg/position"
 	c "github.com/SolarSystem/pkg/utl/config"
@@ -9,21 +9,22 @@ import (
 // TODO: remove sun from here for consistency. Check where it's used
 // Base system
 type System struct {
-	Positions      []*pos.Position	
+	Positions      []*pos.Position
 	Events         map[string]*Event
 	SunCoordinates *pos.Coordinate // what if it has multiple suns?
-	Cfg 		   *c.Configuration
+	Cfg            *c.Configuration
+	TimeToCycle    int
 }
 
 // Event struct
 type Event struct {
-	Name       		string
-	DaysEvent  		[]int
-	AmountDays 		int
-	PeakDay    		int
-	MaxPerimeter 	float32	
+	Name            string
+	DaysEvent       []int
+	AmountDays      int
+	PeakDay         int
+	MaxPerimeter    float32
 	Implementations IEvent
-	DailyCheck 		bool
+	DailyCheck      bool
 }
 
 // IEvent is implemented by any event that wants to have a daily check performed.
@@ -55,7 +56,7 @@ func (sys *System) NewEvent(name string, implementation IEvent, dailyCheck bool)
 		0,
 		0,
 		implementation,
-		dailyCheck, 
+		dailyCheck,
 	}
 	sys.Events[name] = event
 }
@@ -66,7 +67,7 @@ func newChecks() []IEvent {
 }
 
 // RotateAndExecute rotates {n} days and executes a function for each day. STARTS ON POSITION 0
-// TODO: this gets called per event instead of only once. Change that! 
+// TODO: this gets called per event instead of only once. Change that!
 func RotateAndExecute(days int, sys *System, event string) {
 	for i := 0; i < days; i++ {
 		sys.Events[event].Implementations.DailyCheck(sys, i)

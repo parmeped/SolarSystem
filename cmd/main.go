@@ -2,30 +2,25 @@ package main
 
 import (
 	"fmt"
-	
-	o "github.com/SolarSystem/pkg/events/optimalalignment"
-	//e "github.com/SolarSystem/pkg/events"
+
+	e "github.com/SolarSystem/pkg/events"
 	repo "github.com/SolarSystem/pkg/repository"
 	sol "github.com/SolarSystem/pkg/system"
+
 	//"github.com/SolarSystem/pkg/job"
 	"github.com/SolarSystem/pkg/utl/config"
 )
 
 func main() {
 
-	cfg := config.Load()	
+	cfg := config.Load()
 
 	// Load initial planets
 	DB := repo.New()
 	DB.SolarSystem = sol.New(cfg.Planets, cfg)
 	sys := DB.SolarSystem
-	// Key: 1043 Value: &{1043 Tuesday, 12-Dec-23 22:07:08 -03 Óptima presión y temperatura. Ideal para la playa!}
-	
-	// job.CalculateModelForYears(1,sys,DB)
-	// DB.ShowDaysModel()
-	ok := o.SingleDayCheck(sys, 412)
-	fmt.Printf("ok: %v \n", ok)	
-	showSystemData(sys)
+	day := e.GetConditionForDay(sys, 1008)
+	fmt.Printf("Day: %v \n", day)
 
 }
 
@@ -61,5 +56,3 @@ func showSystemData(sol *sol.System) {
 		fmt.Print("\n")
 	}
 }
-
-
