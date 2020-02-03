@@ -1,8 +1,8 @@
 package api
 
 import (
-	"github.com/gin-gonic/gin"
 	sol "github.com/SolarSystem/pkg/system"
+	"github.com/gin-gonic/gin"
 )
 
 // IService is later implemented by the service
@@ -15,7 +15,7 @@ func SetupRouter(service IService) *gin.Engine {
 
 	router := gin.Default()
 	v1 := router.Group("/v1")
-	v1.GET("/dayClimate", getClimateForDay(service))	
+	v1.GET("/dayClimate/:Day", getClimateForDay(service))
 
 	return router
 }
