@@ -71,6 +71,7 @@ func (event RainSeason) DailyCheck(sys *sol.System, dayChecked int) {
 	}
 }
 
+
 func checkForPeakRainDay(coords *[]pos.Coordinate, perimeter float32) (bool, float32) {
 	c1, c2, c3 := (*coords)[0], (*coords)[1], (*coords)[2]
 	var sideA, sideB, sideC float64

@@ -83,3 +83,8 @@ func registerEvent(event string, sys *sol.System) bool {
 	}
 	return true
 }
+
+// GetConditionForDay gets the condition for a given day. 
+func GetConditionForDay(day int, sys *sol.System) {
+
+}

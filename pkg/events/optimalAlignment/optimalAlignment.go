@@ -39,3 +39,18 @@ func (event OptimalAlignment) DailyCheck(sys *sol.System, dayChecked int) {
 
 	}
 }
+
+// SingleDayCheck check the condition for a single day 
+func SingleDayCheck(sys *sol.System, dayChecked int) bool {	
+	for _, v := range sys.Positions {
+		v.ClockWisePosition = pos.GetPositionAtTime(&v.Planet, dayChecked)		
+	}
+	isAligned, coords := pos.ConvertToCartesianAndExecute(sys.Positions, pos.CheckAlignmentForCoordinates)
+	if isAligned {		
+		*coords = append(*coords, *sys.SunCoordinates)
+		if isAligned, _ = pos.CheckAlignmentForCoordinates(coords); !isAligned {
+			return true
+		}
+	}
+	return false
+}

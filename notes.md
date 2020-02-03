@@ -66,6 +66,8 @@ Make the generic event conversion. // OK
 TODO: [Improvement] make it concurrent
 Work on Job, make it concurrent. Make the repository for storing the days. Make the coordinates be calculated once per day for each position. This could require a refactor of the position struct. // OK. Didn't make it concurrent :( 
 Work on Api, expose a single endpoint that returns the condition of the queried day.
+    Should have a service which is injected as an interface on the routes, this service would later check if the job was performed, if it wasn't we could either check for that day only (this should perform all the checks!) or perform the job and then check. 
+
 Work on Tests
 Work on try catch and defers. 
 See remaing problems, clean code. 
