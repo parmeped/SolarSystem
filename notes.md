@@ -10,9 +10,6 @@ every event happens n time on a cycle, therefore multiplying n * amountCycles = 
 2. ¿Cuántos períodos de lluvia habrá y qué día será el pico máximo de lluvia?
 3. ¿Cuántos períodos de condiciones óptimas de presión y temperatura habrá?
 
-// TODO: Check this! 
-All checks should start on day 1 and finish on day 360. Or, start on day 0 and finish on day 359. 
-
 
 #Objectives:
 Four questions // 4 out of 4. 
@@ -49,12 +46,6 @@ If there's time, improve for better checking. As of now, since the checks are be
 this is when the three points are collinear. AND! they are NOT collinear with the sun. (test for the remaining point? ORRR use the days there's drough! on those days, we should NOT check for collinearity. Maybe implement both approaches, since one's more efficient and the other one is a compromise.)
 //DONE First have to convert the polar coordinates into cartesian coordinates. 
 
-#Job
-
-#Api
-
-#Program Upload
-
 ------------
 #Current problems
 //DONE can't execute a dinamic function (which depends on wich event I'm trying to check for) and at the same time save on a "global" var.
@@ -66,7 +57,7 @@ Make the generic event conversion. // OK
 TODO: [Improvement] make it concurrent
 Work on Job, make it concurrent. Make the repository for storing the days. Make the coordinates be calculated once per day for each position. This could require a refactor of the position struct. // OK. Didn't make it concurrent :( 
 Work on Api, expose a single endpoint that returns the condition of the queried day.
-    Should have a service which is injected as an interface on the routes, this service would later check if the job was performed, if it wasn't we could either check for that day only (this should perform all the checks!) or perform the job and then check. 
+    Should have a service which is injected as an interface on the routes, this service would later check if the job was performed, if it wasn't we could either check for that day only (this should perform all the checks!) or perform the job and then check. // OK
 
 Work on Tests
 Work on try catch and defers. 

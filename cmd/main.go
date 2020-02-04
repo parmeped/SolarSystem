@@ -3,11 +3,8 @@ package main
 import (
 	"fmt"
 
-	e "github.com/SolarSystem/pkg/events"
 	repo "github.com/SolarSystem/pkg/repository"
 	sol "github.com/SolarSystem/pkg/system"
-
-	//"github.com/SolarSystem/pkg/job"
 	"github.com/SolarSystem/pkg/utl/config"
 )
 
@@ -18,10 +15,6 @@ func main() {
 	// Load initial planets
 	DB := repo.New()
 	DB.SolarSystem = sol.New(cfg.Planets, cfg)
-	sys := DB.SolarSystem
-	day := e.GetConditionForDay(sys, 1008)
-	fmt.Printf("Day: %v \n", day)
-
 }
 
 func checkErr(err error) {

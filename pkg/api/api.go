@@ -10,12 +10,12 @@ type IService interface {
 	GetClimateForDay(day int) *sol.Day
 }
 
-// SetupRouter a Gin server
+// SetupRouter returns a Gin server
 func SetupRouter(service IService) *gin.Engine {
 
 	router := gin.Default()
 	v1 := router.Group("/v1")
-	v1.GET("/dayClimate/:Day", getClimateForDay(service))
+	v1.GET("/climateForDay/:Day", getClimateForDay(service))
 
 	return router
 }

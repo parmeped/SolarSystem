@@ -6,10 +6,13 @@ import (
 	e "github.com/SolarSystem/pkg/events"
 	repo "github.com/SolarSystem/pkg/repository"
 	sol "github.com/SolarSystem/pkg/system"
+	er "github.com/SolarSystem/pkg/utl/error"
 )
 
 // CalculateModelForYears fills the repository with the conditions the planet will have on each day up to a certain date, given an amount of {years}
-func CalculateModelForYears(years int, sys *sol.System, db *repo.Database) {
+func CalculateModelForYearsJob(years int, sys *sol.System, db *repo.Database) {
+	er.HandleError("CalculateModelForYearsJob")
+
 	// Run the model for every event, 1 year.
 	e.GetAmountPerEventForYears(1, sys, "DroughtSeason")
 	e.GetAmountPerEventForYears(1, sys, "OptimalAlignment")
@@ -28,6 +31,10 @@ func CalculateModelForYears(years int, sys *sol.System, db *repo.Database) {
 
 // Calculates the model for a year and adds it to the repository
 func calculateModelForDays(date time.Time, sys *sol.System, dayID, limit int, db *repo.Database) {
+	er.HandleError("calculateModelForDaysJob")
+
+	droughEvent := DroughtSeason{"DroughtSeason"}
+
 	days := []*sol.Day{}
 	e := sys.Events
 	condition := ""
@@ -46,6 +53,8 @@ func calculateModelForDays(date time.Time, sys *sol.System, dayID, limit int, db
 
 // check for every day, crop slice when one is found as to improve performance on later checks.
 func checkCondition(dayNumber, peakDay int, days ...[]int) ([]int, []int, []int, string) {
+	er.HandleError("checkConditionJob")
+
 	condition := ""
 	if dayNumber == peakDay {
 		return days[0], days[1], days[2], sol.PeakRain

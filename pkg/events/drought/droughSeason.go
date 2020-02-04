@@ -1,10 +1,8 @@
 package drought
 
-// this package should expose methods to calculate the drought season.
-
 import (
-	"fmt"
 
+	er "github.com/SolarSystem/pkg/utl/error"
 	pos "github.com/SolarSystem/pkg/position"
 	sol "github.com/SolarSystem/pkg/system"
 )
@@ -28,6 +26,8 @@ func (event DroughtSeason) DailyCheck(sys *sol.System, dayChecked int) {
 
 // SingleDayCheck to know if planets are aligned with sun.
 func SingleDayCheck(sys *sol.System, dayChecked int) bool {
+	er.HandleError("SingleDayCheckDR")
+
 	for _, v := range sys.Positions {
 		v.ClockWisePosition = pos.GetPositionAtTime(&v.Planet, dayChecked)
 	}
@@ -39,6 +39,7 @@ func SingleDayCheck(sys *sol.System, dayChecked int) bool {
 
 // GetEventPerCycle calculates how many times there's a Drought season on a cycle. Implementation of IEvent
 func (event DroughtSeason) GetEventPerCycle(cycleDays int, sys *sol.System) (int, []int) {
+	er.HandleError("GetEventPerCycleDR")
 
 	fastestCycle, firstIndex, secondIndex, lastIndex := cycleDays, 0, 0, 0
 	positions := sys.Positions
@@ -74,6 +75,7 @@ func (event DroughtSeason) GetEventPerCycle(cycleDays int, sys *sol.System) (int
 
 // checks if there are droughts on a cycle. {amountOfDroughts, []daysOfDroughts}.
 func checkForDroughts(daysToFirst, firstIndex, lastIndex, cycleDays int, sys *sol.System) (int, []int) {
+	er.HandleError("checkForDroughts")
 
 	amountOfDroughts, daysOfDroughts := 0, []int{}
 	positionToCheck, positionToCompare := sys.Positions[firstIndex], sys.Positions[lastIndex]
@@ -95,8 +97,9 @@ func checkForDroughts(daysToFirst, firstIndex, lastIndex, cycleDays int, sys *so
 // TODO: [Improvement] This could clearly use the collinearity function, but on the other hand this is a super small and simple checking method.
 // drought check helper. Compares two positions to find a drought.
 func checkPositionsForDrought(positionToCheck, positionToCompare, orbitalLength int) bool {
+	er.HandleError("checkPositionsForDrought")
+
 	result := float32(positionToCheck) - float32(positionToCompare)
-	fmt.Printf("posCheck: %v, posCompare: %v, result: %v \n", positionToCheck, positionToCompare, result)
 
 	if result < 0 {
 		result = result * -1

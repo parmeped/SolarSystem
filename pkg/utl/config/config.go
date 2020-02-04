@@ -4,7 +4,7 @@ import (
 
 	"time"
 	"fmt"
-	
+	er "github.com/SolarSystem/pkg/utl/error"
 	pRepo "github.com/SolarSystem/pkg/planets"	
 )
 
@@ -16,6 +16,8 @@ const (
 
 // Load returns Configuration struct
 func Load() *Configuration {
+	er.HandleError("Load Config")
+	
 	timeStamp()
 
 	return &Configuration{

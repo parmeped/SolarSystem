@@ -9,15 +9,20 @@ import (
 	r "github.com/SolarSystem/pkg/events/rainseason"
 	pos "github.com/SolarSystem/pkg/position"
 	sol "github.com/SolarSystem/pkg/system"
+	er "github.com/SolarSystem/pkg/utl/error"
 )
 
 // GetAmountPerEventForYears returns the amount of times an event happens on {years}
 func GetAmountPerEventForYears(years int, sys *sol.System, event string) int {
+	defer er.HandleError("GetAmountPerEventForYears")
+
 	return GetAmountPerEventForDays(years*sys.Cfg.DaysInYear, sys, event)
 }
 
 // GetAmountPerEventForDays returns the amount of times an event happens on {days}. If event does not exist, returns -1
 func GetAmountPerEventForDays(days int, sys *sol.System, event string) int {
+	defer er.HandleError("GetAmountPerEventForDays")
+
 	cycleDays := pos.TimeToSystemCycle(sys.Positions[0], sys.Positions[1], sys.Positions[2])
 	multiplier := days / int(cycleDays)
 	daysRemaining := days % int(cycleDays)
@@ -42,9 +47,11 @@ func GetAmountPerEventForDays(days int, sys *sol.System, event string) int {
 	return -1
 }
 
-// TODO: when event doesn't exist, this explodes.
 // Registers the event in case it isn't already.
 func registerEvent(event string, sys *sol.System) bool {
+	defer er.HandleError("registerEvent")
+
+
 	if _, ok := sys.Events[event]; !ok {
 		switch event {
 		case "DroughtSeason":
@@ -63,6 +70,12 @@ func registerEvent(event string, sys *sol.System) bool {
 
 // GetConditionForDay gets the condition for a given day.
 func GetConditionForDay(sys *sol.System, day int) *sol.Day {
+	defer er.HandleError("GetConditionForDay")
+
+	if day < 0 {
+		return nil
+	}
+
 	date := &sol.Day{day, sys.Cfg.StartingDate.AddDate(0, 0, day).Format(time.RFC850), sol.Normal}
 
 	// No other way to get the peak rain day. Should check anyway for each point.
