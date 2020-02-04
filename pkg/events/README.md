@@ -1,0 +1,2 @@
+Esta capeta contiene todos los eventos y las formas de checkear por cada uno de ellos. 
+El archivo events.go debería ser el que es accedido por defecto para consultar por un día específico, o ejecutar chequeos amplios.

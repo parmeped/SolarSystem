@@ -1,0 +1,1 @@
+Contiene archivo de config y el handler para los errores. 

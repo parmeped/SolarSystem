@@ -1,0 +1,1 @@
+El servicio que implementa IService y la funcion GetClimateForDay()

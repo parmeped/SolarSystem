@@ -1,0 +1,1 @@
+Contiene el array de planetas inicial y un struct que define el Planet
