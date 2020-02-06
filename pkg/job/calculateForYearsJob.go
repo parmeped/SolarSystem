@@ -33,8 +33,6 @@ func CalculateModelForYearsJob(years int, sys *sol.System, db *repo.Database) {
 func calculateModelForDays(date time.Time, sys *sol.System, dayID, limit int, db *repo.Database) {
 	er.HandleError("calculateModelForDaysJob")
 
-	droughEvent := DroughtSeason{"DroughtSeason"}
-
 	days := []*sol.Day{}
 	e := sys.Events
 	condition := ""

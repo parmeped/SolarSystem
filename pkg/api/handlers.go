@@ -8,10 +8,18 @@ import (
 )
 
 const (
-	processingError = "There was an error processing the request"
-	noParameterError = "Error, no parameter was provided"
+	processingError      = "There was an error processing the request"
+	noParameterError     = "Error, no parameter was provided"
 	dayGreaterThan0Error = "Error, day queried must be equal to or greater than 0"
+	nothingToSee         = "Nothing to see here! Move along..."
 )
+
+// Default
+func handle() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.JSON(http.StatusOK, nothingToSee)
+	}
+}
 
 // GetClimateForDay handler
 func getClimateForDay(service IService) gin.HandlerFunc {

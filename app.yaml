@@ -1,0 +1,2 @@
+runtime: go113
+entrypoint: main.go
