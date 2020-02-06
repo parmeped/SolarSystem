@@ -1,2 +1,2 @@
-runtime: go113
+runtime: go112
 entrypoint: main.go
