@@ -1,23 +1,26 @@
 package api
 
 import (
-	sol "github.com/SolarSystem/pkg/system"
-	"github.com/gin-gonic/gin"
+	"log"
+	"net/http"
+	"os"
 )
 
-// IService is later implemented by the service
-type IService interface {
-	GetClimateForDay(day int) *sol.Day
-}
+// SetupAndRunRouter runs the server
+func SetupAndRunRouter() {
 
-// SetupRouter returns a Gin server
-func SetupRouter(service IService) *gin.Engine {
+	http.HandleFunc("/ClimateForDay/", getClimateForDay)
+	http.HandleFunc("/", handle)
 
-	router := gin.Default()
-	v1 := router.Group("/v1")
+	// [START setting_port]
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+		log.Printf("Defaulting to port %s", port)
+	}
 
-	v1.GET("/climateForDay/:Day", getClimateForDay(service))
-	v1.GET("/", handle())
-
-	return router
+	log.Printf("Listening on port %s", port)
+	if err := http.ListenAndServe(":"+port, nil); err != nil {
+		log.Fatal(err)
+	}
 }

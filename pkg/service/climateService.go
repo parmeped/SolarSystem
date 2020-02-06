@@ -1,7 +1,6 @@
 package service
 
 import (
-	"github.com/SolarSystem/pkg/api"
 	e "github.com/SolarSystem/pkg/events"
 	repo "github.com/SolarSystem/pkg/repository"
 	sol "github.com/SolarSystem/pkg/system"
@@ -13,7 +12,7 @@ type ClimateService struct {
 }
 
 // New returns a pointer to a climate service
-func New(DB *repo.Database) api.IService {
+func New(DB *repo.Database) ClimateService {
 	return ClimateService{DB}
 }
 
